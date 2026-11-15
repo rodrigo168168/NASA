@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   GameState,
   PlanetScenario,
@@ -27,6 +27,14 @@ import { normalizarCodigo } from './engine/rng';
 import { RealFlareNote } from './components/RealFlareNote';
 import { MISSION_ACTIONS } from './engine/actions';
 import { storageService } from './services/storageService';
+import {
+  clearCareerHistory,
+  loadCareerHistory,
+  recordFromGame,
+  saveCareerRecord,
+  type CareerRecord,
+} from './services/careerHistory';
+import { CareerHistoryPanel } from './components/CareerHistoryPanel';
 import { soundService } from './services/soundService';
 
 // Icons
@@ -256,6 +264,8 @@ export function App() {
   const [missionCodeInput, setMissionCodeInput] = useState('');
   const [selectedHistoricalId, setSelectedHistoricalId] = useState<string | null>(null);
   const [solesInput, setSolesInput] = useState(15);
+  const [careerHistory, setCareerHistory] = useState<CareerRecord[]>(() => loadCareerHistory());
+  const carreraGuardada = useRef(false);
 
   const [gameState, setGameState] = useState<GameState>(() => {
     const saved = storageService.loadGame();
@@ -859,6 +869,20 @@ export function App() {
 
   // Etiqueta de la misión jugada: nombre de la misión histórica y código del aula.
   const misionJugada = buscarMision(gameState.historicalMissionId);
+
+  // Historial: cada carrera terminada se guarda una sola vez en este dispositivo.
+  const nombreMisionJugada = misionJugada ? misionJugada.nombre : null;
+  useEffect(() => {
+    if (gameState.status !== 'victory' && gameState.status !== 'defeat') {
+      carreraGuardada.current = false;
+      return;
+    }
+    if (carreraGuardada.current) return;
+    const registro = recordFromGame(gameState, colonyOVR, nombreMisionJugada, Date.now());
+    if (!registro) return;
+    carreraGuardada.current = true;
+    setCareerHistory(saveCareerRecord(registro));
+  }, [gameState, colonyOVR, nombreMisionJugada]);
   const etiquetaMision =
     (misionJugada ? ` • ${misionJugada.nombre}` : '') +
     (gameState.missionCode ? ` • CÓDIGO ${gameState.missionCode}` : '');
@@ -1193,6 +1217,15 @@ export function App() {
                 : 'El instructor da un código y todo el grupo entrena la misma misión, con los mismos eventos, para comparar resultados. Sin código, los eventos salen al azar.'}
             </p>
           </div>
+
+          <CareerHistoryPanel
+            records={careerHistory}
+            commander={commanderName}
+            onClear={() => {
+              clearCareerHistory();
+              setCareerHistory([]);
+            }}
+          />
 
           {/* Big Start Career Button */}
           <button
