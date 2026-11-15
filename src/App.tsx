@@ -1731,6 +1731,38 @@ export function App() {
                       </button>
                     );
                   })}
+                  {/* Sin presupuesto para ninguna opción: la partida no puede quedar trabada */}
+                  {currentEvent.choices.every(
+                    (choice) => gameState.mainResources.credits < (choice.costCredits || 0),
+                  ) && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleEventChoice({
+                          id: `${currentEvent.id}-sin-fondos`,
+                          text: 'Seguir sin intervenir',
+                          description: 'El presupuesto no alcanza para ninguna opción.',
+                          consequences: {
+                            crewMoraleDelta: -5,
+                            customMessage:
+                              'Sin presupuesto, la tripulación dejó pasar la situación sin intervenir. La moral bajó un poco.',
+                          },
+                          stemLesson:
+                            'En una misión real el presupuesto también es un recurso vital: si se gasta todo antes de tiempo, se pierden oportunidades.',
+                        })
+                      }
+                      className="w-full text-left p-3.5 sm:p-4 rounded-2xl border bg-amber-950/40 border-amber-500/50 hover:border-amber-300 shadow-lg transition-all active:scale-[0.99]"
+                    >
+                      <span className="font-heading font-black text-xs sm:text-sm text-white flex items-center gap-1.5">
+                        <ChevronRight className="w-4 h-4 text-amber-300 shrink-0" />
+                        Seguir sin intervenir
+                      </span>
+                      <p className="text-xs text-slate-300 font-sans pl-5 leading-snug mt-1">
+                        El presupuesto no alcanza para ninguna opción. La tripulación sigue adelante, con la moral un
+                        poco más baja (-5).
+                      </p>
+                    </button>
+                  )}
                 </div>
               ) : (
                 /* Post-Decision Confirmation Card before advancing Sol */
