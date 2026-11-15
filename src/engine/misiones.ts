@@ -81,7 +81,22 @@ export function datoRealDelEvento(eventId?: string | null): DatoReal | undefined
  * Simula un sol aplicando el dato real del evento que tocó.
  * Sin dato real hace exactamente lo mismo que el motor de siempre.
  */
+/**
+ * Avanza un sol: aplica el dato real del evento y, cada ${SOLES_ENTRE_NAVES} soles, la nave de carga.
+ */
 export function avanzarSolConDatosReales(state: GameState): SimulationStepResult {
+  const resultado = avanzarConDato(state);
+  const { nextState } = resultado;
+  if (!tocaNave(nextState)) return resultado;
+  return {
+    ...resultado,
+    nextState: reabastecer(nextState),
+    // El aviso va primero: la pantalla muestra el primero de la lista.
+    warnings: [AVISO_NAVE, ...resultado.warnings],
+  };
+}
+
+function avanzarConDato(state: GameState): SimulationStepResult {
   const dato = datoRealDelEvento(state.currentEventId);
   if (!dato) return advanceSimulationCycle(state);
 
@@ -497,6 +512,74 @@ export function programaDeEventos(
     recientes.push(evento.id);
   }
   return programa;
+}
+
+// ---------------------------------------------------------------------------
+// La misión se abastece según su duración, como en la realidad:
+// una salida corta lleva menos carga, y a una estadía larga le llega una nave de carga
+// cada cierto tiempo (a la Estación Espacial le llegan varias por año).
+// ---------------------------------------------------------------------------
+
+/** Cada cuántos soles llega una nave de carga. */
+export const SOLES_ENTRE_NAVES = 15;
+
+export const AVISO_NAVE =
+  'LLEGÓ LA NAVE DE CARGA con el relevo: agua, comida, oxígeno, repuestos y tripulación descansada (su dosis de radiación arranca de cero).';
+
+/** Lo que trae cada nave, como proporción de las reservas con las que arranca el destino. */
+export const CARGA_NAVE = { consumibles: 1.0, creditos: 350, repuestos: 40, blindaje: 20, salud: 25, moral: 20 };
+
+/**
+ * Parte de las reservas normales con la que se sale: una misión de menos de 15 soles
+ * lleva menos carga (nadie manda 15 soles de comida a una salida de 5).
+ */
+export function factorDeReservas(soles: number): number {
+  if (soles >= SOLES_ENTRE_NAVES) return 1;
+  return Math.round((0.55 + (0.45 * soles) / SOLES_ENTRE_NAVES) * 100) / 100;
+}
+
+/** ¿Empieza un tramo nuevo (sol 16, 31, 46…) en una partida que sigue en juego? */
+export function tocaNave(state: GameState): boolean {
+  return state.status === 'playing' && state.cycle > 1 && (state.cycle - 1) % SOLES_ENTRE_NAVES === 0;
+}
+
+/** Descarga la nave: repone consumibles, repuestos para los módulos y parches para el blindaje. */
+export function reabastecer(state: GameState): GameState {
+  const s = state.subResources;
+  const ini = state.planet.initialResources;
+  const k = CARGA_NAVE.consumibles;
+  const facilities = { ...state.facilities };
+  for (const clave of Object.keys(facilities) as (keyof typeof facilities)[]) {
+    const modulo = facilities[clave];
+    const health = Math.min(100, modulo.health + CARGA_NAVE.repuestos);
+    facilities[clave] = {
+      ...modulo,
+      health,
+      status: health <= 25 ? 'critical' : health <= 60 ? 'damaged' : modulo.level > 1 ? 'upgraded' : 'operational',
+    };
+  }
+  return {
+    ...state,
+    facilities,
+    // Relevo de tripulación: las agencias rotan al equipo para no pasar el límite de dosis.
+    crew: state.crew.map((m) =>
+      m.health > 0
+        ? { ...m, health: Math.min(100, m.health + CARGA_NAVE.salud), morale: Math.min(100, m.morale + CARGA_NAVE.moral) }
+        : m,
+    ),
+    subResources: {
+      ...s,
+      radiationExposureAccumulated: 0,
+      oxygenCurrent: Math.min(s.oxygenMax, Math.round((s.oxygenCurrent + ini.oxygen * k) * 10) / 10),
+      waterCurrent: Math.min(s.waterMax, Math.round((s.waterCurrent + ini.water * k) * 10) / 10),
+      foodCurrent: Math.min(s.foodMax, Math.round((s.foodCurrent + ini.food * k) * 10) / 10),
+      shieldIntegrity: Math.min(100, s.shieldIntegrity + CARGA_NAVE.blindaje),
+    },
+    mainResources: {
+      ...state.mainResources,
+      credits: state.mainResources.credits + CARGA_NAVE.creditos,
+    },
+  };
 }
 
 /** Duraciones que se ofrecen como botón; también se puede escribir otra. */

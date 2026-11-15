@@ -17,6 +17,7 @@ import {
   avanzarSolConDatosReales,
   buscarMision,
   normalizarSoles,
+  factorDeReservas,
   DURACIONES,
   SOLES_MIN,
   SOLES_MAX,
@@ -144,11 +145,14 @@ export function createInitialGameState(
   const facilities = JSON.parse(JSON.stringify(INITIAL_FACILITIES));
   const crew = JSON.parse(JSON.stringify(INITIAL_CREW));
 
-  let oxygen = planet.initialResources.oxygen;
-  let water = planet.initialResources.water;
-  let food = planet.initialResources.food;
+  // Una misión corta sale con menos carga; desde 15 soles, con la carga completa.
+  const maxCycles = normalizarSoles(mision.soles);
+  const carga = factorDeReservas(maxCycles);
+  let oxygen = Math.round(planet.initialResources.oxygen * carga);
+  let water = Math.round(planet.initialResources.water * carga);
+  let food = Math.round(planet.initialResources.food * carga);
   let battery = planet.initialResources.battery;
-  let credits = planet.initialResources.credits;
+  let credits = Math.round(planet.initialResources.credits * carga);
   let waterRecycling = 0.85;
   let solarEff = 0.95;
   let shield = 92;
@@ -173,7 +177,6 @@ export function createInitialGameState(
   }
 
   const missionCode = mision.missionCode ? normalizarCodigo(mision.missionCode) : '';
-  const maxCycles = normalizarSoles(mision.soles);
   const firstEvent = eventoDelSol(
     {
       cycle: 1,
@@ -1164,7 +1167,7 @@ export function App() {
               />
             </div>
             <p className="text-[11px] text-slate-400 leading-snug">
-              Elige cuántos soles debe resistir la base, de {SOLES_MIN} a {SOLES_MAX}. Una misión corta es un simulacro rápido; una larga exige cuidar el desgaste y las reservas.
+              Elige cuántos soles debe resistir la base, de {SOLES_MIN} a {SOLES_MAX}. Una misión corta sale con menos carga; en una larga llega una nave de carga con el relevo cada 15 soles, y hay que resistir hasta que llegue.
             </p>
           </div>
 
