@@ -200,3 +200,49 @@ export async function loadFlares(): Promise<{ origin: NasaDataOrigin; flares: So
   }
   return { origin: 'saved', flares: SAVED_FLARES };
 }
+
+// ---------------------------------------------------------------------------
+// El Sol real dentro de la partida
+// ---------------------------------------------------------------------------
+
+/** Clase de la fulguración del evento del juego: la que alcanzó Marte el 20/05/2024. */
+export const GAME_FLARE_CLASS = 'X12';
+
+const SHORT_MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+
+function spokenDate(date: string): string {
+  const [year, month, day] = date.split('-');
+  return `${parseInt(day, 10)} ${SHORT_MONTHS[parseInt(month, 10) - 1] ?? ''} ${year}`;
+}
+
+export interface FlareBriefing {
+  /** Qué midió la NASA */
+  fact: string;
+  /** Cómo se compara con la fulguración del evento del juego */
+  comparison: string;
+}
+
+/** Compara la fulguración real más fuerte con la del evento de partículas solares. */
+export function flareBriefing(flares: SolarFlare[], origin: NasaDataOrigin): FlareBriefing | null {
+  const top = [...flares].sort((a, b) => flareStrength(b.classType) - flareStrength(a.classType))[0];
+  if (!top || flareStrength(top.classType) === 0) return null;
+  const region = top.region !== null ? `, región ${top.region} del Sol` : '';
+  const fact =
+    origin === 'live'
+      ? `La fulguración más fuerte de los últimos 30 días fue una ${top.classType}, el ${spokenDate(top.date)}${region}.`
+      : `La fulguración más fuerte de 2024 vista desde la Tierra fue una ${top.classType}, el ${spokenDate(top.date)}${region}.`;
+  const ratio = flareStrength(GAME_FLARE_CLASS) / flareStrength(top.classType);
+  const comparison =
+    ratio >= 1.5
+      ? `La de esta emergencia es clase ${GAME_FLARE_CLASS}: unas ${Math.round(ratio)} veces más fuerte.`
+      : `Es casi tan fuerte como la de esta emergencia (clase ${GAME_FLARE_CLASS}): esto pasa de verdad.`;
+  return { fact, comparison };
+}
+
+let flaresOnce: Promise<{ origin: NasaDataOrigin; flares: SolarFlare[] }> | null = null;
+
+/** Un solo pedido por sesión, compartido entre la partida y la pestaña de fuentes. */
+export function loadFlaresOnce(): Promise<{ origin: NasaDataOrigin; flares: SolarFlare[] }> {
+  if (!flaresOnce) flaresOnce = loadFlares();
+  return flaresOnce;
+}

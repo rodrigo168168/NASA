@@ -545,6 +545,12 @@ export function pickNextCycleEvent(
     if (sol1) return sol1;
   }
 
+  // El Sol 3 siempre trae la tormenta solar: es el evento que se compara con el Sol real (NASA DONKI).
+  if (cycle === 3) {
+    const solar = GAME_EVENTS_DECK.find((e) => e.id === 'solar_flare_lunar');
+    if (solar) return solar;
+  }
+
   const eligible = GAME_EVENTS_DECK.filter((ev) => {
     if (ev.id === 'sol1_initial_deployment') return false;
     if (ev.applicablePlanets && !ev.applicablePlanets.includes(planetId)) return false;

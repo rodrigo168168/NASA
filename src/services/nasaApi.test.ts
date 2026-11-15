@@ -3,6 +3,7 @@ import {
   MARS_SUNLIGHT_FRACTION,
   SAVED_FLARES,
   SAVED_SUN_DAYS,
+  flareBriefing,
   flareStrength,
   parseFlaresResponse,
   parsePowerResponse,
@@ -67,5 +68,32 @@ describe('NASA DONKI', () => {
   it('la copia guardada está ordenada de mayor a menor', () => {
     const strengths = SAVED_FLARES.map((f) => flareStrength(f.classType));
     expect(strengths).toEqual([...strengths].sort((a, b) => b - a));
+  });
+});
+
+describe('El Sol real dentro de la partida', () => {
+  it('compara la fulguración real del mes con la del evento', () => {
+    const briefing = flareBriefing(
+      [
+        { date: '2026-11-07', classType: 'M1.9', region: 14566 },
+        { date: '2026-11-05', classType: 'M3.5', region: 14566 },
+      ],
+      'live',
+    )!;
+    expect(briefing.fact).toBe(
+      'La fulguración más fuerte de los últimos 30 días fue una M3.5, el 5 nov 2026, región 14566 del Sol.',
+    );
+    expect(briefing.comparison).toContain('unas 34 veces más fuerte');
+  });
+
+  it('con la copia guardada habla de 2024 y no dice que es de este mes', () => {
+    const briefing = flareBriefing(SAVED_FLARES, 'saved')!;
+    expect(briefing.fact).toContain('de 2024');
+    expect(briefing.fact).toContain('X9.0, el 3 oct 2024');
+    expect(briefing.comparison).toContain('casi tan fuerte');
+  });
+
+  it('sin fulguraciones no muestra nada', () => {
+    expect(flareBriefing([], 'live')).toBeNull();
   });
 });

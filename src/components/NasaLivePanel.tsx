@@ -3,7 +3,7 @@ import { ExternalLink, Radio, Sun, Zap } from 'lucide-react';
 import {
   MARS_SUNLIGHT_FRACTION,
   POWER_PLACE,
-  loadFlares,
+  loadFlaresOnce,
   loadSunDays,
   summarizeSun,
   type NasaDataOrigin,
@@ -44,7 +44,7 @@ export const NasaLivePanel: React.FC = () => {
   useEffect(() => {
     let active = true;
     loadSunDays().then((result) => active && setSun(result));
-    loadFlares().then((result) => active && setFlares(result));
+    loadFlaresOnce().then((result) => active && setFlares(result));
     return () => {
       active = false;
     };

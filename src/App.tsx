@@ -19,6 +19,7 @@ import {
   eventoDelSol,
 } from './engine/misiones';
 import { normalizarCodigo } from './engine/rng';
+import { RealFlareNote } from './components/RealFlareNote';
 import { MISSION_ACTIONS } from './engine/actions';
 import { storageService } from './services/storageService';
 import { soundService } from './services/soundService';
@@ -1780,6 +1781,7 @@ export function App() {
                     ? lastDecisionFeedback.message
                     : `Todos los sistemas están listos para cerrar el Sol ${gameState.cycle}. Revisa tu táctica abajo y pulsa "SIMULAR SOL".`}
                 </p>
+                {currentEvent?.id === 'solar_flare_lunar' && <RealFlareNote />}
               </div>
 
               {/* Choices List with Visual Consequence Pills (Copero Dilemma Buttons) */}
