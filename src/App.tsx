@@ -12,8 +12,13 @@ import {
   PLANET_SCENARIOS,
   NASA_ECLSS_METRICS,
 } from './domain/constants';
-import { advanceSimulationCycle } from './engine/simulationEngine';
-import { pickNextCycleEvent } from './engine/events';
+import {
+  MISIONES_HISTORICAS,
+  avanzarSolConDatosReales,
+  buscarMision,
+  eventoDelSol,
+} from './engine/misiones';
+import { normalizarCodigo } from './engine/rng';
 import { MISSION_ACTIONS } from './engine/actions';
 import { storageService } from './services/storageService';
 import { soundService } from './services/soundService';
@@ -128,7 +133,8 @@ const SPECIALTIES: {
 
 export function createInitialGameState(
   planet: PlanetScenario,
-  commander?: CommanderSetup
+  commander?: CommanderSetup,
+  mision: { missionCode?: string; historicalMissionId?: string } = {}
 ): GameState {
   const facilities = JSON.parse(JSON.stringify(INITIAL_FACILITIES));
   const crew = JSON.parse(JSON.stringify(INITIAL_CREW));
@@ -161,9 +167,22 @@ export function createInitialGameState(
     });
   }
 
-  const firstEvent = pickNextCycleEvent(1, planet.id, []);
+  const missionCode = mision.missionCode ? normalizarCodigo(mision.missionCode) : '';
+  const firstEvent = eventoDelSol(
+    {
+      cycle: 1,
+      planetId: planet.id,
+      maxCycles: 15,
+      missionCode,
+      historicalMissionId: mision.historicalMissionId,
+    },
+    []
+  );
 
   return {
+    missionCode: missionCode || undefined,
+    historicalMissionId: mision.historicalMissionId,
+    currentEventId: firstEvent.id,
     status: 'playing',
     planet,
     cycle: 1,
@@ -225,6 +244,8 @@ export function App() {
   const [selectedCountry, setSelectedCountry] = useState(COUNTRIES[0]);
   const [selectedSpecialtyId, setSelectedSpecialtyId] = useState<'energy' | 'biotech' | 'commander'>('energy');
   const [selectedPlanetId, setSelectedPlanetId] = useState<'mars' | 'moon'>('mars');
+  const [missionCodeInput, setMissionCodeInput] = useState('');
+  const [selectedHistoricalId, setSelectedHistoricalId] = useState<string | null>(null);
 
   const [gameState, setGameState] = useState<GameState>(() => {
     const saved = storageService.loadGame();
@@ -519,7 +540,8 @@ export function App() {
   // Start new career
   const handleStartMission = () => {
     soundService.playConfirm();
-    const planet = PLANET_SCENARIOS[selectedPlanetId];
+    const misionHistorica = buscarMision(selectedHistoricalId);
+    const planet = PLANET_SCENARIOS[misionHistorica ? misionHistorica.planetId : selectedPlanetId];
     const spec =
       SPECIALTIES.find((s) => s.id === selectedSpecialtyId) || SPECIALTIES[0];
     const commander: CommanderSetup = {
@@ -530,7 +552,10 @@ export function App() {
       specialtyName: spec.name,
     };
 
-    const newState = createInitialGameState(planet, commander);
+    const newState = createInitialGameState(planet, commander, {
+      missionCode: missionCodeInput,
+      historicalMissionId: misionHistorica?.id,
+    });
     setGameState(newState);
     setRecentEventIds(['sol1_initial_deployment']);
     setLastDecisionFeedback(null);
@@ -731,13 +756,18 @@ export function App() {
     const prevCreds = gameState.mainResources.credits;
 
     setTimeout(() => {
-      const { nextState, warnings } = advanceSimulationCycle(gameState);
+      const { nextState, warnings } = avanzarSolConDatosReales(gameState);
 
       let chosenEvent = null;
       if (nextState.status === 'playing') {
-        chosenEvent = pickNextCycleEvent(
-          nextState.cycle,
-          nextState.planet.id,
+        chosenEvent = eventoDelSol(
+          {
+            cycle: nextState.cycle,
+            planetId: nextState.planet.id,
+            maxCycles: nextState.maxCycles,
+            missionCode: nextState.missionCode,
+            historicalMissionId: nextState.historicalMissionId,
+          },
           recentEventIds
         );
         setRecentEventIds((prev) => [...prev.slice(-4), chosenEvent!.id]);
@@ -770,6 +800,7 @@ export function App() {
       setGameState({
         ...nextState,
         activeEvent: chosenEvent,
+        currentEventId: chosenEvent?.id,
         lastSolSummary: solSummary,
       });
 
@@ -814,6 +845,12 @@ export function App() {
     };
     showToast(`Táctica activa: ${labels[policy]}`, true);
   };
+
+  // Etiqueta de la misión jugada: nombre de la misión histórica y código del aula.
+  const misionJugada = buscarMision(gameState.historicalMissionId);
+  const etiquetaMision =
+    (misionJugada ? ` • ${misionJugada.nombre}` : '') +
+    (gameState.missionCode ? ` • CÓDIGO ${gameState.missionCode}` : '');
 
   // -------------------------------------------------------------
   // 1. WELCOME SCREEN: CREA TU LEYENDA ESPACIAL (Estilo Copero)
@@ -981,7 +1018,7 @@ export function App() {
                 type="button"
                 onClick={() => {
                   soundService.playClick();
-                  setSelectedPlanetId('mars');
+                  setSelectedPlanetId('mars'); setSelectedHistoricalId(null);
                 }}
                 className={`p-3.5 rounded-2xl border text-left transition-all flex items-center gap-3 ${
                   selectedPlanetId === 'mars'
@@ -1011,7 +1048,7 @@ export function App() {
                 type="button"
                 onClick={() => {
                   soundService.playClick();
-                  setSelectedPlanetId('moon');
+                  setSelectedPlanetId('moon'); setSelectedHistoricalId(null);
                 }}
                 className={`p-3.5 rounded-2xl border text-left transition-all flex items-center gap-3 ${
                   selectedPlanetId === 'moon'
@@ -1037,6 +1074,77 @@ export function App() {
                 </div>
               </button>
             </div>
+          </div>
+
+          {/* STEP 4: Entrenamiento con misiones reales */}
+          <div className="space-y-2">
+            <label className="text-xs font-heading font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+              <Star className="w-3.5 h-3.5" /> 4. Entrenamiento: revive una misión real (opcional)
+            </label>
+            <p className="text-[11px] text-slate-400 leading-snug">
+              Así se entrena a los astronautas: con los días más difíciles que ya ocurrieron. Los
+              números de estas misiones son los que midió la NASA.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {MISIONES_HISTORICAS.map((m) => {
+                const activa = selectedHistoricalId === m.id;
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => {
+                      soundService.playClick();
+                      setSelectedHistoricalId(activa ? null : m.id);
+                      if (!activa) setSelectedPlanetId(m.planetId);
+                    }}
+                    className={`p-3 rounded-2xl border text-left transition-all ${
+                      activa
+                        ? 'bg-amber-950/40 border-amber-400 ring-2 ring-amber-400/30'
+                        : 'bg-[#080d1a] border-slate-800'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-heading font-black text-xs text-white uppercase tracking-wide">
+                        {m.nombre}
+                      </span>
+                      <span className="text-[10px] font-mono text-amber-300 shrink-0">
+                        {m.anio} • {m.planetId === 'mars' ? 'MARTE' : 'LUNA'}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-300 mt-1 leading-snug">{m.resumen}</p>
+                    {activa && (
+                      <p className="text-[10px] text-amber-200/90 mt-1.5 leading-snug">
+                        HECHO REAL: {m.hechoReal} (Fuente: {m.fuente}.)
+                      </p>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* STEP 5: Código de misión para el aula */}
+          <div className="space-y-2">
+            <label
+              htmlFor="codigo-mision"
+              className="text-xs font-heading font-bold uppercase tracking-wider text-emerald-300 flex items-center gap-1.5"
+            >
+              <Dices className="w-3.5 h-3.5" /> 5. Código de misión del aula (opcional)
+            </label>
+            <input
+              id="codigo-mision"
+              type="text"
+              value={missionCodeInput}
+              onChange={(e) => setMissionCodeInput(e.target.value)}
+              maxLength={24}
+              placeholder="Ejemplo: SANTA-CRUZ-15"
+              className="w-full px-3 py-2.5 rounded-xl bg-[#080d1a] border border-slate-700 text-sm font-mono text-white uppercase placeholder:normal-case placeholder:text-slate-500 outline-none focus:border-emerald-400"
+            />
+            <p className="text-[11px] text-slate-400 leading-snug">
+              {normalizarCodigo(missionCodeInput)
+                ? `Todos los que escriban ${normalizarCodigo(missionCodeInput)} reciben los mismos eventos en el mismo orden: gana quien decide mejor, no quien tiene más suerte.`
+                : 'El profesor da un código y toda la clase juega la misma misión, con los mismos eventos. Sin código, los eventos salen al azar.'}
+            </p>
           </div>
 
           {/* Big Start Career Button */}
@@ -1095,7 +1203,7 @@ export function App() {
                   {cmdr?.countryFlag} {cmdr?.name || 'Comandante'}
                 </h2>
                 <p className="text-xs text-cyan-300 font-mono">
-                  {cmdr?.specialtyName} • {gameState.planet.name.split('—')[0].trim()}
+                  {cmdr?.specialtyName} • {gameState.planet.name.split('—')[0].trim()}{etiquetaMision}
                 </p>
               </div>
             </div>
@@ -1185,7 +1293,7 @@ export function App() {
 
           <div>
             <div className="text-[10px] font-mono uppercase tracking-widest text-red-400 font-bold">
-              FIN DE LA CARRERA EN EL SOL {gameState.cycle} / 15
+              FIN DE LA CARRERA EN EL SOL {gameState.cycle} / 15{etiquetaMision}
             </div>
             <h2 className="text-lg font-heading font-black text-white mt-0.5">
               {cmdr?.countryFlag} {cmdr?.name}

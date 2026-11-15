@@ -537,7 +537,8 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
 export function pickNextCycleEvent(
   cycle: number,
   planetId: 'mars' | 'moon',
-  recentEventIds: string[]
+  recentEventIds: string[],
+  rng: () => number = Math.random
 ): GameEvent {
   if (cycle === 1) {
     const sol1 = GAME_EVENTS_DECK.find((e) => e.id === 'sol1_initial_deployment');
@@ -553,7 +554,7 @@ export function pickNextCycleEvent(
 
   const notRecent = eligible.filter((ev) => !recentEventIds.includes(ev.id));
   const pool = notRecent.length > 0 ? notRecent : eligible;
-  const randomIndex = Math.floor(Math.random() * pool.length);
+  const randomIndex = Math.floor(rng() * pool.length);
   return pool[randomIndex] || GAME_EVENTS_DECK[0];
 }
 

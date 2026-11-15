@@ -212,6 +212,12 @@ export interface GameState {
     specialtyId: 'energy' | 'biotech' | 'commander';
     specialtyName: string;
   };
+  /** Código de misión del aula: el mismo código da los mismos eventos en el mismo orden. */
+  missionCode?: string;
+  /** Misión histórica real que se está entrenando (Opportunity 2018, Apolo 13). */
+  historicalMissionId?: string;
+  /** Evento que tocó en el sol actual: de él sale el dato real que cambia la simulación. */
+  currentEventId?: string;
   lastSolSummary?: {
     sol: number;
     batteryDelta: number;
