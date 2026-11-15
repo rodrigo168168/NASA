@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { STEM_KNOWLEDGE_CARDS, STEM_GLOSSARY, STEMCard } from '../engine/stemKnowledge';
 import { BookOpen, X, Search, Sparkles, Award, ExternalLink, HelpCircle } from 'lucide-react';
 import { soundService } from '../services/soundService';
-import { DATA_SOURCES, REAL_EVENTS, SPACE_WEATHER_CATALOG } from '../domain/sources';
+import { DATA_SOURCES, REAL_EVENTS, SPACE_WEATHER_CATALOG, nasaImagePage, nasaImageSrc } from '../domain/sources';
+import { NasaLivePanel } from './NasaLivePanel';
 
 interface STEMLearningCenterProps {
   onClose: () => void;
@@ -230,6 +231,27 @@ export const STEMLearningCenter: React.FC<STEMLearningCenterProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {REAL_EVENTS.map((ev) => (
                     <div key={ev.id} className="p-3.5 rounded-xl bg-amber-950/20 border border-amber-500/30 space-y-1.5">
+                      {ev.images.map((image) => (
+                        <figure key={image.nasaId} className="space-y-1">
+                          <img
+                            src={nasaImageSrc(image)}
+                            alt={image.caption}
+                            loading="lazy"
+                            className="w-full rounded-lg border border-slate-700 bg-black"
+                          />
+                          <figcaption className="text-[10px] text-slate-400 leading-snug">
+                            {image.caption}{' '}
+                            <a
+                              href={nasaImagePage(image)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-emerald-400 underline"
+                            >
+                              Foto {image.nasaId} · {image.credit}
+                            </a>
+                          </figcaption>
+                        </figure>
+                      ))}
                       <span className="text-[10px] font-mono text-amber-300">{ev.date}</span>
                       <p className="text-xs font-heading font-black text-slate-100">{ev.title}</p>
                       <p className="text-xs text-slate-300 leading-relaxed">{ev.whatHappened}</p>
@@ -248,6 +270,7 @@ export const STEMLearningCenter: React.FC<STEMLearningCenterProps> = ({
                   ))}
                 </div>
               </div>
+              <NasaLivePanel />
               <div>
                 <h3 className="text-xs font-heading font-black uppercase tracking-wider text-emerald-300 mb-2">
                   De dónde sale cada número

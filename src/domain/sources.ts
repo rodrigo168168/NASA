@@ -1,6 +1,6 @@
 /**
  * Fuentes de los números y de los hechos reales que usa el simulador.
- * Los datos viven dentro del proyecto: el juego no necesita internet para mostrarlos.
+ * Los datos y las fotos viven dentro del proyecto: el juego no necesita internet para mostrarlos.
  * Los enlaces se comprobaron el 15/11/2026.
  */
 
@@ -16,6 +16,16 @@ export interface DataSource {
   url: string;
 }
 
+/** Foto real de la biblioteca de imágenes de la NASA (images.nasa.gov), guardada en public/nasa */
+export interface NasaImage {
+  /** Identificador en images.nasa.gov */
+  nasaId: string;
+  /** Archivo dentro de public/nasa */
+  file: string;
+  caption: string;
+  credit: string;
+}
+
 export interface RealEvent {
   id: string;
   date: string;
@@ -24,6 +34,7 @@ export interface RealEvent {
   inTheGame: string;
   sourceName: string;
   url: string;
+  images: NasaImage[];
 }
 
 export const DATA_SOURCES: DataSource[] = [
@@ -104,6 +115,22 @@ export const REAL_EVENTS: RealEvent[] = [
       'Evento "Tormenta Global de Polvo Marciano": si la batería llega a cero, el soporte vital cae al 30% y el invernadero se apaga.',
     sourceName: 'NASA Science — Mars Exploration Rover Opportunity',
     url: 'https://science.nasa.gov/mission/mer-opportunity/',
+    images: [
+      {
+        nasaId: 'PIA22329',
+        file: 'PIA22329.jpg',
+        caption:
+          'Mapa de todo Marte del 6 de junio de 2018, tomado desde la órbita por la sonda Mars Reconnaissance Orbiter. La mancha clara es la tormenta; el punto azul es Opportunity.',
+        credit: 'NASA/JPL-Caltech/MSSS',
+      },
+      {
+        nasaId: 'PIA22521',
+        file: 'PIA22521.jpg',
+        caption:
+          'Así se fue apagando el cielo para Opportunity: de un mediodía normal (izquierda) a un Sol que apenas se ve (derecha). Es una simulación hecha con sus mediciones.',
+        credit: 'NASA/JPL-Caltech/TAMU',
+      },
+    ],
   },
   {
     id: 'solar_storm_2024',
@@ -115,8 +142,27 @@ export const REAL_EVENTS: RealEvent[] = [
       'Evento "Evento de Partículas Solares": con el escudo por debajo del 50%, la dosis se multiplica y la tripulación pierde salud.',
     sourceName: 'NASA — NASA Watches Mars Light Up During Epic Solar Storm',
     url: 'https://www.nasa.gov/missions/mars-science-laboratory/nasa-watches-mars-light-up-during-epic-solar-storm/',
+    images: [
+      {
+        nasaId: 'PIA26302',
+        file: 'PIA26302.jpg',
+        caption:
+          'Foto de la cámara de navegación de Curiosity, 20 de mayo de 2024. Los puntos y rayas blancas no son polvo: son partículas del Sol golpeando el sensor de la cámara.',
+        credit: 'NASA/JPL-Caltech',
+      },
+    ],
   },
 ];
+
+/** Dirección de una foto guardada, válida también cuando el juego se sirve desde una subcarpeta */
+export function nasaImageSrc(image: NasaImage): string {
+  return `${import.meta.env.BASE_URL}nasa/${image.file}`;
+}
+
+/** Página de la foto en la biblioteca de imágenes de la NASA */
+export function nasaImagePage(image: NasaImage): string {
+  return `https://images.nasa.gov/details/${image.nasaId}`;
+}
 
 /** Catálogo público de la NASA donde se registra cada tormenta solar */
 export const SPACE_WEATHER_CATALOG = {
