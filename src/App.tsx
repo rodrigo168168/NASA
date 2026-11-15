@@ -1176,7 +1176,7 @@ export function App() {
               htmlFor="codigo-mision"
               className="text-xs font-heading font-bold uppercase tracking-wider text-emerald-300 flex items-center gap-1.5"
             >
-              <Dices className="w-3.5 h-3.5" /> 5. Código de misión del aula (opcional)
+              <Dices className="w-3.5 h-3.5" /> 5. Código de misión del instructor (opcional)
             </label>
             <input
               id="codigo-mision"
@@ -1190,7 +1190,7 @@ export function App() {
             <p className="text-[11px] text-slate-400 leading-snug">
               {normalizarCodigo(missionCodeInput)
                 ? `Todos los que escriban ${normalizarCodigo(missionCodeInput)} reciben los mismos eventos en el mismo orden: gana quien decide mejor, no quien tiene más suerte.`
-                : 'El profesor da un código y toda la clase juega la misma misión, con los mismos eventos. Sin código, los eventos salen al azar.'}
+                : 'El instructor da un código y todo el grupo entrena la misma misión, con los mismos eventos, para comparar resultados. Sin código, los eventos salen al azar.'}
             </p>
           </div>
 

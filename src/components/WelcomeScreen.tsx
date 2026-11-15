@@ -112,7 +112,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           </p>
 
           <p className="max-w-2xl mx-auto text-xs sm:text-sm text-slate-400 leading-relaxed font-sans pt-1">
-            Asume el mando de una colonia espacial de avanzada. Gestiona la red eléctrica, el bucle cerrado de soporte vital (ECLSS) y los blindajes contra radiación cósmica. Sobrevive durante 15 Soles tomando decisiones fundamentadas en ingeniería real de la NASA.
+            Asume el mando de una colonia espacial de avanzada. Gestiona la red eléctrica, el bucle cerrado de soporte vital (ECLSS) y los blindajes contra radiación cósmica. Sobrevive de 5 a 60 Soles, los que elijas, tomando decisiones fundamentadas en ingeniería real de la NASA.
           </p>
         </div>
 

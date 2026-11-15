@@ -45,7 +45,7 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ onClose }) => {
               <Sparkles className="w-4 h-4" /> Objetivo de la Misión
             </h3>
             <p className="leading-relaxed">
-              Como Comandante de la base espacial, tu meta es <strong>sobrevivir con tu tripulación durante 15 Soles (ciclos completos de misión)</strong>. Para lograrlo, debes mantener un balance positivo o estable en los 4 recursos fundamentales y responder a emergencias aeroespaciales en tiempo real.
+              Como Comandante de la base espacial, tu meta es <strong>sobrevivir con tu tripulación durante los Soles que elijas, de 5 a 60 (15 por defecto). En misiones largas llega una nave de carga con el relevo cada 15 Soles</strong>. Para lograrlo, debes mantener un balance positivo o estable en los 4 recursos fundamentales y responder a emergencias aeroespaciales en tiempo real.
             </p>
           </div>
 
