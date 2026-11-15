@@ -9,6 +9,17 @@ Permite a estudiantes, jueces y entusiastas del espacio experimentar en carne pr
 
 ---
 
+## 🌞 Qué tiene de nuevo: datos reales de la NASA dentro de la partida
+
+- **El Sol de este mes, en vivo.** En el Sol 3 llega la tormenta solar, y el juego le pregunta al catálogo **NASA DONKI** cuál fue la fulguración más fuerte de los últimos 30 días y la compara con la de la emergencia (clase X12, la que alcanzó Marte el 20 de mayo de 2024).
+- **Energía solar medida por satélite.** **NASA POWER** da la energía que llegó al suelo en Santa Cruz de la Sierra en las últimas semanas, y el juego la compara con el 43 % que llega a Marte.
+- **Misiones que pasaron de verdad.** Opportunity y la tormenta de polvo de 2018, y Apolo 13 (1970), con los hechos en el orden en que ocurrieron.
+- **Código de misión del aula.** El profesor da un código y toda la clase juega la misma misión, con los mismos eventos en el mismo orden, para comparar decisiones.
+- **Fotos reales** de la biblioteca de imágenes de la NASA (PIA22329, PIA22521, PIA26302), con su crédito.
+- **No depende de internet.** Cada pedido tiene un límite de 8 segundos; si falla, se muestra la copia guardada y se avisa con la etiqueta "COPIA GUARDADA".
+
+---
+
 ## 🛰️ 1. Objetivo del Simulador
 
 Sobrevivir durante **15 Soles (ciclos completos de misión)** gestionando una colonia espacial bajo restricciones reales de masa, potencia, blindaje y soporte vital.
