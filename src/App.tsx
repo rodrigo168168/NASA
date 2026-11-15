@@ -458,6 +458,8 @@ export function App() {
   const [selectedPlanetId, setSelectedPlanetId] = useState<'mars' | 'moon'>('mars');
   const [missionCodeInput, setMissionCodeInput] = useState('');
   const [selectedHistoricalId, setSelectedHistoricalId] = useState<string | null>(null);
+  // Misión sorpresa: el destino sale al sorteo y los eventos al azar
+  const [misionSorpresa, setMisionSorpresa] = useState(false);
   const [solesInput, setSolesInput] = useState(15);
   const [careerHistory, setCareerHistory] = useState<CareerRecord[]>(() => loadCareerHistory());
   const [questionsText, setQuestionsText] = useState(() => loadQuestionsText());
@@ -758,7 +760,14 @@ export function App() {
   const handleStartMission = () => {
     soundService.playConfirm();
     const misionHistorica = buscarMision(selectedHistoricalId);
-    const planet = PLANET_SCENARIOS[misionHistorica ? misionHistorica.planetId : selectedPlanetId];
+    // Con código de misión, todo el grupo recibe el mismo destino sorteado.
+    const codigoSorteo = normalizarCodigo(missionCodeInput);
+    const caeLuna = codigoSorteo
+      ? [...codigoSorteo].reduce((suma, letra) => suma + letra.charCodeAt(0), 0) % 2 === 1
+      : Math.random() < 0.5;
+    const destinoSorteado: 'mars' | 'moon' = caeLuna ? 'moon' : 'mars';
+    const planet =
+      PLANET_SCENARIOS[misionHistorica ? misionHistorica.planetId : misionSorpresa ? destinoSorteado : selectedPlanetId];
     const spec =
       SPECIALTIES.find((s) => s.id === selectedSpecialtyId) || SPECIALTIES[0];
     const commander: CommanderSetup = {
@@ -1272,7 +1281,7 @@ export function App() {
                 type="button"
                 onClick={() => {
                   soundService.playClick();
-                  setSelectedPlanetId('mars'); setSelectedHistoricalId(null);
+                  setSelectedPlanetId('mars'); setSelectedHistoricalId(null); setMisionSorpresa(false);
                 }}
                 className={`p-3.5 rounded-2xl border text-left transition-all flex items-center gap-3 ${
                   selectedPlanetId === 'mars'
@@ -1302,7 +1311,7 @@ export function App() {
                 type="button"
                 onClick={() => {
                   soundService.playClick();
-                  setSelectedPlanetId('moon'); setSelectedHistoricalId(null);
+                  setSelectedPlanetId('moon'); setSelectedHistoricalId(null); setMisionSorpresa(false);
                 }}
                 className={`p-3.5 rounded-2xl border text-left transition-all flex items-center gap-3 ${
                   selectedPlanetId === 'moon'
@@ -1349,6 +1358,7 @@ export function App() {
                     onClick={() => {
                       soundService.playClick();
                       setSelectedHistoricalId(activa ? null : m.id);
+                      setMisionSorpresa(false);
                       if (!activa) setSelectedPlanetId(m.planetId);
                     }}
                     className={`p-3 rounded-2xl border text-left transition-all ${
@@ -1374,6 +1384,34 @@ export function App() {
                   </button>
                 );
               })}
+              <button
+                type="button"
+                onClick={() => {
+                  soundService.playClick();
+                  setMisionSorpresa(!misionSorpresa);
+                  setSelectedHistoricalId(null);
+                }}
+                className={`p-3 rounded-2xl border text-left transition-all sm:col-span-2 ${
+                  misionSorpresa
+                    ? 'bg-amber-950/40 border-amber-400 ring-2 ring-amber-400/30'
+                    : 'bg-[#080d1a] border-slate-800'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-heading font-black text-xs text-white uppercase tracking-wide">
+                    🎲 Misión sorpresa: puede pasar cualquier cosa
+                  </span>
+                  <span className="text-[10px] font-mono text-amber-300 shrink-0">AL AZAR • MARTE O LUNA</span>
+                </div>
+                <p className="text-[11px] text-slate-300 mt-1 leading-snug">
+                  No sabes a dónde vas ni qué te espera: el destino sale al sorteo y las emergencias llegan sin aviso.
+                </p>
+                {misionSorpresa && (
+                  <p className="text-[10px] text-amber-200/90 mt-1.5 leading-snug">
+                    Activada: el destino que elegiste arriba no cuenta. Te enteras al aterrizar.
+                  </p>
+                )}
+              </button>
             </div>
           </div>
 
@@ -1463,7 +1501,7 @@ export function App() {
             <Play className="w-5 h-5 fill-current" />
             <span>
               INICIAR CARRERA CON {selectedCountry.flag} {commanderName || 'COMANDANTE'} EN{' '}
-              {selectedPlanet.id === 'mars' ? 'MARTE' : 'LA LUNA'}
+              {misionSorpresa ? 'UN DESTINO SORPRESA' : selectedPlanet.id === 'mars' ? 'MARTE' : 'LA LUNA'}
             </span>
           </button>
         </main>
