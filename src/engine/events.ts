@@ -44,6 +44,22 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
         stemLesson:
           'El racionamiento térmico es una técnica aeroespacial estándar para evitar el colapso del bus de potencia a costa del bienestar de la tripulación.',
       },
+      {
+        id: 'opt_dust_clean_panels',
+        text: 'EVA para Limpiar los Paneles y Bajar el Consumo a la Mitad',
+        costCredits: 60,
+        description: 'La tripulación sale a barrer el polvo de los paneles mientras la base funciona a media carga.',
+        consequences: {
+          creditsDelta: -60,
+          batteryDelta: 35,
+          crewHealthDelta: -4,
+          crewMoraleDelta: -5,
+          facilityWearDelta: { solarArray: 8 },
+          customMessage: 'Paneles despejados por unas horas: algo de energía recuperada, con una tripulación cansada y cubierta de polvo.',
+        },
+        stemLesson:
+          'El módulo InSight de la NASA perdió energía por el polvo acumulado en sus paneles hasta apagarse en 2022. Una tripulación puede limpiarlos; un robot depende del viento.',
+      },
     ],
   },
   {
@@ -92,6 +108,21 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
         stemLesson:
           'La protección electromagnética activa simula el campo geomagnético de Lorentz (F = q(v x B)) para desviar partículas cargadas antes del impacto.',
       },
+      {
+        id: 'opt_solar_water_wall',
+        text: 'Refugio Improvisado con los Tanques de Agua y las Provisiones',
+        costCredits: 0,
+        description: 'Sin gastar presupuesto ni energía: se apilan agua y víveres alrededor del dormitorio como blindaje.',
+        consequences: {
+          waterDelta: -12,
+          shieldDelta: -4,
+          crewHealthDelta: -6,
+          crewMoraleDelta: -8,
+          customMessage: 'El muro de agua frenó buena parte de los protones, pero no todos: la tripulación recibió algo de dosis.',
+        },
+        stemLesson:
+          'Es el plan real de la nave Orion: en una tormenta solar la tripulación se mete en el compartimento central y se rodea con la carga y el agua, porque el hidrógeno frena los protones.',
+      },
     ],
   },
   {
@@ -134,6 +165,21 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
         },
         stemLesson:
           'Consumir reservas finitas no renovables aumenta exponencialmente el riesgo ante futuras contingencias.',
+      },
+      {
+        id: 'opt_sabatier_field_repair',
+        text: 'Reparación en Campo: Limpiar el Catalizador y Operar a Carga Reducida',
+        costCredits: 120,
+        description: 'Regeneras el catalizador con calor y sellas las grietas; el reactor queda funcionando, pero no como nuevo.',
+        consequences: {
+          creditsDelta: -120,
+          oxygenDelta: -8,
+          facilityWearDelta: { lifeSupport: 8 },
+          crewMoraleDelta: -3,
+          customMessage: 'El reactor volvió a funcionar a carga reducida. Costó menos, pero se perdió algo de oxígeno durante la parada.',
+        },
+        stemLesson:
+          'En la Estación Espacial muchas fallas del soporte vital se resuelven reparando en órbita lo que hay, porque el repuesto puede tardar meses en llegar.',
       },
     ],
   },
@@ -179,6 +225,22 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
         stemLesson:
           'Los núcleos de hielo espacial almacenan registros fósiles de la atmósfera primitiva del sistema solar.',
       },
+      {
+        id: 'opt_ice_shield',
+        text: 'Usar el Hielo como Blindaje: Cubrir el Hábitat',
+        costCredits: 90,
+        description: 'Extraes bloques de hielo y los apilas sobre el hábitat: menos agua para beber, más protección contra la radiación.',
+        consequences: {
+          creditsDelta: -90,
+          batteryDelta: -20,
+          waterDelta: 25,
+          shieldDelta: 18,
+          crewMoraleDelta: 8,
+          customMessage: 'El hielo apilado sobre el hábitat reforzó el blindaje y además dejó algo de agua en los tanques.',
+        },
+        stemLesson:
+          'El concepto Mars Ice Home de la NASA Langley propone un hábitat cubierto de hielo: el hidrógeno del agua es de los mejores escudos contra los rayos cósmicos.',
+      },
     ],
   },
   {
@@ -207,6 +269,34 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
         },
         stemLesson:
           'En ambientes extraterrestres, cada watt eléctrico invertido en iluminación vegetal debe maximizar los gramos de biomasa digestible.',
+      },
+      {
+        id: 'opt_grow_lights_half',
+        text: 'Aplicarlo Solo a la Mitad de las Bandejas (Ensayo Controlado)',
+        costCredits: 40,
+        description: 'Pruebas el nuevo espectro en media cosecha y dejas la otra mitad como control.',
+        consequences: {
+          foodDelta: 22,
+          oxygenDelta: 5,
+          creditsDelta: -40,
+          crewMoraleDelta: 6,
+          customMessage: 'El ensayo confirmó el resultado: la mitad tratada rindió más, sin arriesgar toda la cosecha.',
+        },
+        stemLesson:
+          'Todo experimento serio deja un grupo de control. Así trabaja el sistema Veggie de la Estación Espacial al probar recetas de luz.',
+      },
+      {
+        id: 'opt_grow_lights_publish',
+        text: 'Mantener el Cultivo Actual y Vender los Datos a la Tierra',
+        costCredits: 0,
+        description: 'No cambias nada en el invernadero: envías los resultados y cobras por la investigación.',
+        consequences: {
+          creditsDelta: 180,
+          crewMoraleDelta: 4,
+          customMessage: 'Los datos se publicaron en la Tierra: la base recibió fondos, pero la cosecha siguió igual.',
+        },
+        stemLesson:
+          'El conocimiento también es un producto de la misión: lo que se aprende cultivando en el espacio mejora la agricultura en la Tierra.',
       },
     ],
   },
@@ -251,6 +341,21 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
         stemLesson:
           'La compartimentación estanca es la primera regla naval y aeroespacial para evitar pérdidas catastróficas descontroladas.',
       },
+      {
+        id: 'opt_internal_patch',
+        text: 'Parche Interno de Emergencia, sin Salir al Exterior',
+        costCredits: 60,
+        description: 'Se sella el orificio desde adentro con un kit de parche. Nadie sale, pero queda como arreglo provisorio.',
+        consequences: {
+          creditsDelta: -60,
+          oxygenDelta: -6,
+          facilityWearDelta: { habitat: -8 },
+          crewMoraleDelta: -5,
+          customMessage: 'La fuga quedó contenida desde adentro. El parche aguanta, pero el casco sigue debilitado.',
+        },
+        stemLesson:
+          'HECHO REAL: en agosto de 2018 la Estación Espacial tuvo una fuga por un orificio de 2 mm en una nave Soyuz acoplada. La tripulación la selló desde adentro con resina epoxi y gasa.',
+      },
     ],
   },
   {
@@ -293,6 +398,21 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
         },
         stemLesson:
           'El derating (desclasificación térmica) alarga la vida útil de componentes deteriorados reduciendo el esfuerzo térmico (I²R).',
+      },
+      {
+        id: 'opt_reroute_bus',
+        text: 'Reconfigurar el Bus: Pasar la Carga a la Línea Secundaria',
+        costCredits: 90,
+        description: 'Aíslas el inversor dañado y repartes la carga por la línea de respaldo, que trabajará forzada.',
+        consequences: {
+          creditsDelta: -90,
+          batteryDelta: 15,
+          facilityWearDelta: { solarArray: -6 },
+          crewMoraleDelta: -2,
+          customMessage: 'La línea secundaria tomó la carga. La base tiene energía, pero el sistema quedó sin respaldo y más exigido.',
+        },
+        stemLesson:
+          'Las naves llevan buses eléctricos redundantes justamente para esto: aislar la rama dañada y seguir con la otra mientras se planifica la reparación.',
       },
     ],
   },
@@ -341,6 +461,22 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
         },
         stemLesson:
           'En ingeniería espacial, reutilizar las etapas de descenso como blindaje o almacén reduce la masa total lanzada desde la Tierra.',
+      },
+      {
+        id: 'opt_capsule_medical',
+        text: 'Priorizar el Botiquín, los Filtros y el Correo de la Tierra',
+        costCredits: 30,
+        description: 'Recuperas primero lo médico y lo personal; el resto de la carga queda expuesto y se pierde en parte.',
+        consequences: {
+          creditsDelta: 100,
+          foodDelta: 15,
+          oxygenDelta: 8,
+          crewHealthDelta: 15,
+          crewMoraleDelta: 25,
+          customMessage: 'Medicinas, filtros nuevos y cartas de casa: la tripulación recuperó salud y ánimo.',
+        },
+        stemLesson:
+          'Las naves de carga a la Estación Espacial llevan paquetes personales y comida fresca: la salud mental de la tripulación es parte del soporte vital.',
       },
     ],
   },
@@ -442,6 +578,21 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
         stemLesson:
           'El uso de bacterias fijadoras de nitrógeno en regolito tratado multiplica el rendimiento agrícola espacial.',
       },
+      {
+        id: 'opt_contract_radiation',
+        text: 'Proponer el Estudio de Dosimetría de Radiación',
+        costCredits: 40,
+        description: 'Instalas dosímetros del consorcio en el hábitat: pagan menos, pero los datos te ayudan a mejorar el blindaje.',
+        consequences: {
+          creditsDelta: 160,
+          batteryDelta: -15,
+          shieldDelta: 10,
+          crewMoraleDelta: 6,
+          customMessage: 'El mapa de dosis mostró los puntos débiles del blindaje y se reforzaron. Además se cobró parte del contrato.',
+        },
+        stemLesson:
+          'El instrumento RAD del rover Curiosity mide la radiación en Marte desde 2012; con esos datos se diseñan los refugios de las futuras tripulaciones.',
+      },
     ],
   },
   {
@@ -488,6 +639,21 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
         stemLesson:
           'En situaciones límite, priorizar las reservas físicas del hábitat garantiza la supervivencia a largo plazo.',
       },
+      {
+        id: 'opt_crew_rotating_shifts',
+        text: 'Turnos Rotativos con Ciclo de Luz Controlado',
+        costCredits: 30,
+        description: 'Reorganizas los horarios y ajustas la iluminación al ritmo de sueño: nadie descansa un día entero, nadie hace doble turno.',
+        consequences: {
+          creditsDelta: -30,
+          batteryDelta: 15,
+          crewHealthDelta: 8,
+          crewMoraleDelta: 8,
+          customMessage: 'Con horarios ordenados y luz regulada, la tripulación duerme mejor sin frenar la base.',
+        },
+        stemLesson:
+          'La Estación Espacial usa luces LED que cambian de color a lo largo del día para sostener el ritmo circadiano de los astronautas.',
+      },
     ],
   },
   {
@@ -529,6 +695,21 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
         },
         stemLesson:
           'El control térmico activo mediante intercambiadores de calor de agua evita el sobrecalentamiento de la electrónica de potencia.',
+      },
+      {
+        id: 'opt_humidity_greenhouse',
+        text: 'Devolver la Humedad al Riego del Invernadero',
+        costCredits: 0,
+        description: 'Cierras el ciclo dentro del invernadero: el vapor vuelve a las plantas y la cosecha se adelanta.',
+        consequences: {
+          waterDelta: 15,
+          foodDelta: 25,
+          oxygenDelta: 8,
+          crewMoraleDelta: 4,
+          customMessage: 'El ciclo cerrado de riego adelantó la cosecha: más comida y algo de oxígeno extra.',
+        },
+        stemLesson:
+          'En un sistema de soporte vital biorregenerativo las plantas hacen tres trabajos a la vez: dan comida, producen oxígeno y purifican el agua.',
       },
     ],
   },

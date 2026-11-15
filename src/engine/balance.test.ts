@@ -158,3 +158,14 @@ describe('La misión se abastece según su duración', () => {
     expect(tasa['moon-5']).toBeGreaterThan(40);
   });
 });
+
+describe('Todo evento ofrece tres opciones', () => {
+  it('ningún evento, del mazo ni histórico, tiene menos o más de tres, y no se repiten ids', async () => {
+    const { GAME_EVENTS_DECK } = await import('./events');
+    const { EVENTOS_HISTORICOS } = await import('./misiones');
+    const todos = [...GAME_EVENTS_DECK, ...EVENTOS_HISTORICOS];
+    expect(todos.filter((e) => e.choices.length !== 3).map((e) => e.id)).toEqual([]);
+    const ids = todos.flatMap((e) => e.choices.map((c) => c.id));
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+});

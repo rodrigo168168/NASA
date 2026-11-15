@@ -191,6 +191,20 @@ export const EVENTOS_HISTORICOS: GameEvent[] = [
         stemLesson:
           'Opportunity hizo lo mismo: apagó instrumentos para guardar energía. Ahorrar es gratis, pero tiene un costo en comida y ánimo.',
       },
+      {
+        id: 'opt_opp1_inclinar',
+        text: 'Reorientar los paneles y cargar antes de que oscurezca',
+        costCredits: 80,
+        description: 'Aprovechas la última luz buena para llenar la batería, forzando los paneles.',
+        consequences: {
+          creditsDelta: -80,
+          batteryDelta: 55,
+          crewMoraleDelta: -3,
+          customMessage: 'La batería quedó más cargada para lo que viene. El polvo ya cubre los paneles.',
+        },
+        stemLesson:
+          'Los rovers solares se estacionaban inclinados hacia el Sol en invierno para captar más luz. Orientar bien un panel no cuesta combustible.',
+      },
     ],
   },
   {
@@ -229,6 +243,19 @@ export const EVENTOS_HISTORICOS: GameEvent[] = [
         },
         stemLesson:
           'El presupuesto también es un recurso de la misión: lo que gastas hoy no lo tendrás para la próxima emergencia.',
+      },
+      {
+        id: 'opt_opp2_minimo',
+        text: 'Quedarse adentro y bajar al mínimo',
+        description: 'Nadie sale y no se gasta presupuesto: se apaga el invernadero y casi todo lo demás.',
+        consequences: {
+          batteryDelta: 30,
+          foodDelta: -3,
+          crewMoraleDelta: -10,
+          customMessage: 'Base a oscuras y en silencio. Se ahorró energía; se perdió cosecha y ánimo.',
+        },
+        stemLesson:
+          'Es lo que hizo el equipo de Opportunity: reducir la actividad al mínimo y esperar. Esperar también es una decisión, y tiene costo.',
       },
     ],
   },
@@ -269,6 +296,20 @@ export const EVENTOS_HISTORICOS: GameEvent[] = [
         },
         stemLesson:
           'Guardar una reserva para el peor día es lo que separa una misión que sobrevive de una que se apaga.',
+      },
+      {
+        id: 'opt_opp3_parcial',
+        text: 'Hibernación parcial: aire, calor mínimo y radio',
+        costCredits: 100,
+        description: 'Mantienes la comunicación y algo de calor con una ayuda corta de los generadores.',
+        consequences: {
+          creditsDelta: -100,
+          batteryDelta: 45,
+          crewMoraleDelta: -4,
+          customMessage: 'La base aguanta con lo justo y sigue en contacto con la Tierra.',
+        },
+        stemLesson:
+          'Opportunity perdió el contacto porque ya no tenía energía ni para la radio. Mantener la comunicación viva es parte de sobrevivir.',
       },
     ],
   },
@@ -313,6 +354,19 @@ export const EVENTOS_HISTORICOS: GameEvent[] = [
         stemLesson:
           'En una emergencia el tiempo también se gasta. Cada minuto dudando fue oxígeno que se fue al espacio.',
       },
+      {
+        id: 'opt_a13_diagnostico',
+        text: 'Seguir la lista de verificación con Control de Misión',
+        description: 'Diagnosticas antes de actuar: tardas unos minutos más, pero cierras lo correcto y la tripulación no pierde la calma.',
+        consequences: {
+          oxygenDelta: -15,
+          batteryDelta: -50,
+          crewMoraleDelta: 2,
+          customMessage: 'El diagnóstico costó algo de oxígeno, pero la base quedó aislada con orden y sin pánico.',
+        },
+        stemLesson:
+          'En el Apolo 13 la tripulación y Houston pasaron los primeros minutos leyendo instrumentos antes de tocar nada. Actuar sin diagnóstico puede empeorar la falla.',
+      },
     ],
   },
   {
@@ -352,6 +406,19 @@ export const EVENTOS_HISTORICOS: GameEvent[] = [
         stemLesson:
           'El bienestar de la tripulación importa, pero en una emergencia cada comodidad se paga con reservas.',
       },
+      {
+        id: 'opt_a13_ciclos',
+        text: 'Encender por turnos: solo lo esencial, por horas',
+        description: 'Los sistemas se prenden y apagan según un cronograma. La cabina queda fría, pero no helada.',
+        consequences: {
+          batteryDelta: 15,
+          crewHealthDelta: -3,
+          crewMoraleDelta: -3,
+          customMessage: 'El cronograma de encendido ahorró energía sin congelar a la tripulación.',
+        },
+        stemLesson:
+          'Los ingenieros del Apolo 13 escribieron una secuencia de encendido nueva, paso a paso, para volver a prender la nave con la poca energía que quedaba.',
+      },
     ],
   },
   {
@@ -390,6 +457,19 @@ export const EVENTOS_HISTORICOS: GameEvent[] = [
         stemLesson:
           'El dióxido de carbono que exhalamos es veneno en un espacio cerrado. Si no se filtra, enferma antes de que falte el oxígeno.',
       },
+      {
+        id: 'opt_a13_actividad',
+        text: 'Reducir la actividad: todos quietos para exhalar menos',
+        description: 'Ganas tiempo sin arreglar el filtro: menos movimiento, menos dióxido de carbono.',
+        consequences: {
+          oxygenDelta: 1,
+          crewHealthDelta: -7,
+          crewMoraleDelta: -6,
+          customMessage: 'El CO2 subió más despacio, pero subió: dolor de cabeza y cansancio en la tripulación.',
+        },
+        stemLesson:
+          'Una persona en reposo exhala bastante menos CO2 que una trabajando. Sirve para ganar horas, no para resolver el problema.',
+      },
     ],
   },
   {
@@ -427,6 +507,19 @@ export const EVENTOS_HISTORICOS: GameEvent[] = [
         },
         stemLesson:
           'Consumir como si no pasara nada es la forma más rápida de que una emergencia se vuelva una tragedia.',
+      },
+      {
+        id: 'opt_a13_intermedio',
+        text: 'Racionar a la mitad y recuperar el agua condensada',
+        description: 'Medio litro por persona y se junta la humedad de las paredes frías para usos que no sean beber.',
+        consequences: {
+          waterDelta: 3,
+          crewHealthDelta: -2,
+          crewMoraleDelta: -2,
+          customMessage: 'La reserva se sostiene y la tripulación aguanta mejor que con el racionamiento extremo.',
+        },
+        stemLesson:
+          'La cabina fría del Apolo 13 se llenó de agua condensada. Hoy la Estación Espacial recupera esa humedad y la vuelve agua potable.',
       },
     ],
   },
