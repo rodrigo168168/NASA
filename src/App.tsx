@@ -36,6 +36,7 @@ import {
   type CareerRecord,
 } from './services/careerHistory';
 import { CareerHistoryPanel } from './components/CareerHistoryPanel';
+import { MissionFeedbackPanel } from './components/MissionFeedbackPanel';
 import { soundService } from './services/soundService';
 
 // Icons
@@ -1554,6 +1555,8 @@ export function App() {
             </div>
           </div>
 
+          <MissionFeedbackPanel state={gameState} />
+
           <button
             onClick={handleRestart}
             className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-emerald-400 hover:from-amber-300 hover:to-emerald-300 text-space-950 font-heading font-black text-sm tracking-wider uppercase shadow-xl shadow-amber-500/20 transition-all active:scale-95"
@@ -1601,6 +1604,8 @@ export function App() {
             </strong>
             <p>{cause.recommendations[0]}</p>
           </div>
+
+          <MissionFeedbackPanel state={gameState} />
 
           <button
             onClick={handleRestart}
