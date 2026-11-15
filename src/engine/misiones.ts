@@ -499,6 +499,17 @@ export function programaDeEventos(
   return programa;
 }
 
+/** Duraciones que se ofrecen como botón; también se puede escribir otra. */
+export const DURACIONES = [5, 10, 15, 20, 30];
+export const SOLES_MIN = 5;
+export const SOLES_MAX = 60;
+
+/** Deja la duración pedida como un número entero de soles dentro de lo permitido (15 si no hay). */
+export function normalizarSoles(soles?: number): number {
+  if (soles === undefined || !Number.isFinite(soles)) return 15;
+  return Math.max(SOLES_MIN, Math.min(SOLES_MAX, Math.round(soles)));
+}
+
 export interface DatosDePartida {
   cycle: number;
   planetId: PlanetType;

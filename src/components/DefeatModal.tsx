@@ -32,7 +32,7 @@ export const DefeatModal: React.FC<DefeatModalProps> = ({
             {defeatCause.title}
           </h2>
           <p className="text-xs font-mono text-red-300 mt-1">
-            Fallo crítico alcanzado en el Sol {state.cycle} de 15 en {state.planet.name.split('—')[0].trim()}
+            Fallo crítico alcanzado en el Sol {state.cycle} de {state.maxCycles} en {state.planet.name.split('—')[0].trim()}
           </p>
         </div>
 

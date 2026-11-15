@@ -44,7 +44,7 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
             ¡MISIÓN CUMPLIDA CON ÉXITO!
           </h2>
           <p className="text-xs font-mono text-emerald-300 mt-1">
-            Has asegurado la supervivencia de Outpost Alpha durante 15 Soles en {state.planet.name.split('—')[0].trim()}
+            Has asegurado la supervivencia de Outpost Alpha durante {state.maxCycles} Soles en {state.planet.name.split('—')[0].trim()}
           </p>
         </div>
 

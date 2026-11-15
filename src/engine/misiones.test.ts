@@ -4,6 +4,7 @@ import {
   OPPORTUNITY_2018_WH,
   avanzarSolConDatosReales,
   eventoDelSol,
+  normalizarSoles,
   programaDeEventos,
 } from './misiones';
 import { advanceSimulationCycle } from './simulationEngine';
@@ -48,6 +49,38 @@ describe('Código de misión', () => {
 
   it('respeta el destino: en la Luna no salen eventos solo de Marte', () => {
     expect(ids('SANTA-CRUZ-15', 'moon')).not.toContain('dust_storm_mars');
+  });
+});
+
+describe('Duración de la misión', () => {
+  it('sin elegir dura 15 soles, y lo pedido se ajusta entre el mínimo y el máximo', () => {
+    expect(normalizarSoles()).toBe(15);
+    expect(normalizarSoles(20)).toBe(20);
+    expect(normalizarSoles(1)).toBe(5);
+    expect(normalizarSoles(500)).toBe(60);
+    expect(normalizarSoles(7.6)).toBe(8);
+    expect(normalizarSoles(NaN)).toBe(15);
+  });
+
+  it('una misión de 5 soles se gana al terminar el sol 5, y una de 30 sigue', () => {
+    for (const [soles, esperado] of [[5, 'victory'], [30, 'playing']] as const) {
+      let estado: GameState = {
+        ...createInitialGameState(PLANET_SCENARIOS.mars, undefined, { soles }),
+        activeEvent: null,
+      };
+      expect(estado.maxCycles).toBe(soles);
+      for (let i = 0; i < 5 && estado.status === 'playing'; i++) {
+        estado = { ...advanceSimulationCycle(estado).nextState, activeEvent: null };
+      }
+      expect(estado.status).toBe(esperado);
+    }
+  });
+
+  it('con el mismo código, la misión larga empieza igual que la corta', () => {
+    const corta = programaDeEventos('AULA-3', 'mars', 5).map((e) => e.id);
+    const larga = programaDeEventos('AULA-3', 'mars', 30).map((e) => e.id);
+    expect(larga).toHaveLength(30);
+    expect(larga.slice(0, 5)).toEqual(corta);
   });
 });
 

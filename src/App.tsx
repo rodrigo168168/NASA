@@ -16,6 +16,10 @@ import {
   MISIONES_HISTORICAS,
   avanzarSolConDatosReales,
   buscarMision,
+  normalizarSoles,
+  DURACIONES,
+  SOLES_MIN,
+  SOLES_MAX,
   eventoDelSol,
 } from './engine/misiones';
 import { normalizarCodigo } from './engine/rng';
@@ -135,7 +139,7 @@ const SPECIALTIES: {
 export function createInitialGameState(
   planet: PlanetScenario,
   commander?: CommanderSetup,
-  mision: { missionCode?: string; historicalMissionId?: string } = {}
+  mision: { missionCode?: string; historicalMissionId?: string; soles?: number } = {}
 ): GameState {
   const facilities = JSON.parse(JSON.stringify(INITIAL_FACILITIES));
   const crew = JSON.parse(JSON.stringify(INITIAL_CREW));
@@ -169,11 +173,12 @@ export function createInitialGameState(
   }
 
   const missionCode = mision.missionCode ? normalizarCodigo(mision.missionCode) : '';
+  const maxCycles = normalizarSoles(mision.soles);
   const firstEvent = eventoDelSol(
     {
       cycle: 1,
       planetId: planet.id,
-      maxCycles: 15,
+      maxCycles,
       missionCode,
       historicalMissionId: mision.historicalMissionId,
     },
@@ -187,7 +192,7 @@ export function createInitialGameState(
     status: 'playing',
     planet,
     cycle: 1,
-    maxCycles: 15,
+    maxCycles,
     crew,
     facilities,
     subResources: {
@@ -247,6 +252,7 @@ export function App() {
   const [selectedPlanetId, setSelectedPlanetId] = useState<'mars' | 'moon'>('mars');
   const [missionCodeInput, setMissionCodeInput] = useState('');
   const [selectedHistoricalId, setSelectedHistoricalId] = useState<string | null>(null);
+  const [solesInput, setSolesInput] = useState(15);
 
   const [gameState, setGameState] = useState<GameState>(() => {
     const saved = storageService.loadGame();
@@ -555,6 +561,7 @@ export function App() {
 
     const newState = createInitialGameState(planet, commander, {
       missionCode: missionCodeInput,
+      soles: solesInput,
       historicalMissionId: misionHistorica?.id,
     });
     setGameState(newState);
@@ -902,7 +909,7 @@ export function App() {
               CREA TU COMANDANTE ESPACIAL
             </h1>
             <p className="text-xs text-slate-400 font-sans max-w-lg mx-auto">
-              Toma decisiones temporada tras temporada (15 Soles). Cada elección muestra exactamente qué ganas y qué pierdes antes de decidir.
+              Toma decisiones temporada tras temporada (tú eliges cuántos soles). Cada elección muestra exactamente qué ganas y qué pierdes antes de decidir.
             </p>
           </div>
 
@@ -1012,7 +1019,7 @@ export function App() {
           {/* STEP 3: Elige tu Destino (Marte vs Luna) */}
           <div className="space-y-2">
             <label className="text-xs font-heading font-bold uppercase tracking-wider text-cyan-300 flex items-center gap-1.5">
-              <Rocket className="w-3.5 h-3.5" /> 3. Elige el Destino de tu Misión (15 Soles)
+              <Rocket className="w-3.5 h-3.5" /> 3. Elige el Destino de tu Misión
             </label>
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -1126,6 +1133,42 @@ export function App() {
 
           {/* STEP 5: Código de misión para el aula */}
           <div className="space-y-2">
+            <span className="text-xs font-heading font-bold uppercase tracking-wider text-emerald-300 flex items-center gap-1.5">
+              <Rocket className="w-3.5 h-3.5" /> Duración de la misión: {solesInput} soles
+            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              {DURACIONES.map((d) => (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => setSolesInput(d)}
+                  className={`px-3 py-2 rounded-xl border text-sm font-mono font-bold ${
+                    solesInput === d
+                      ? 'bg-emerald-500/20 border-emerald-400 text-emerald-200'
+                      : 'bg-[#080d1a] border-slate-700 text-slate-300'
+                  }`}
+                >
+                  {d}
+                </button>
+              ))}
+              <input
+                id="soles-mision"
+                type="number"
+                min={SOLES_MIN}
+                max={SOLES_MAX}
+                value={solesInput}
+                onChange={(e) => setSolesInput(Number(e.target.value))}
+                onBlur={() => setSolesInput(normalizarSoles(solesInput))}
+                aria-label="Cantidad de soles de la misión"
+                className="w-20 px-3 py-2 rounded-xl bg-[#080d1a] border border-slate-700 text-sm font-mono text-white outline-none focus:border-emerald-400"
+              />
+            </div>
+            <p className="text-[11px] text-slate-400 leading-snug">
+              Elige cuántos soles debe resistir la base, de {SOLES_MIN} a {SOLES_MAX}. Una misión corta es un simulacro rápido; una larga exige cuidar el desgaste y las reservas.
+            </p>
+          </div>
+
+          <div className="space-y-2">
             <label
               htmlFor="codigo-mision"
               className="text-xs font-heading font-bold uppercase tracking-wider text-emerald-300 flex items-center gap-1.5"
@@ -1210,7 +1253,7 @@ export function App() {
             </div>
             <div className="text-right font-mono">
               <span className="text-[10px] text-slate-400 block">TEMPORADAS</span>
-              <span className="text-lg font-heading font-black text-emerald-400">15 / 15</span>
+              <span className="text-lg font-heading font-black text-emerald-400">{gameState.maxCycles} / {gameState.maxCycles}</span>
             </div>
           </div>
 
@@ -1294,7 +1337,7 @@ export function App() {
 
           <div>
             <div className="text-[10px] font-mono uppercase tracking-widest text-red-400 font-bold">
-              FIN DE LA CARRERA EN EL SOL {gameState.cycle} / 15{etiquetaMision}
+              FIN DE LA CARRERA EN EL SOL {gameState.cycle} / {gameState.maxCycles}{etiquetaMision}
             </div>
             <h2 className="text-lg font-heading font-black text-white mt-0.5">
               {cmdr?.countryFlag} {cmdr?.name}
@@ -2216,7 +2259,7 @@ export function App() {
 
       {/* 3. BOTTOM FOOTER */}
       <footer className="p-2.5 border-t border-slate-800/80 bg-[#070b16] text-center text-[10px] font-mono text-slate-500">
-        MARS-1 Simulator • Modo Carrera Intuitivo • Sobrevive 15 Soles con ingeniería real de la NASA
+        MARS-1 Simulator • Modo Carrera Intuitivo • Sobrevive de 5 a 60 Soles con ingeniería real de la NASA
       </footer>
 
       {/* STEM Learning Center Modal */}

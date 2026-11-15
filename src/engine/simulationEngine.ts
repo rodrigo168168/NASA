@@ -384,7 +384,7 @@ export function advanceSimulationCycle(currentState: GameState): SimulationStepR
     victorySummary = {
       finalScore,
       survivingCrewCount: aliveCrew.length,
-      cyclesCompleted: 15,
+      cyclesCompleted: current.maxCycles,
       totalEnergyGenerated: Math.round(totalGenEst),
       waterRecycledPercent: Math.round(current.subResources.waterRecyclingEfficiency * 100),
       scientificBreakthroughs: current.stemDiscoveriesUnlocked.length,
