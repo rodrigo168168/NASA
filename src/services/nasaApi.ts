@@ -94,7 +94,7 @@ export function summarizeSun(days: SunDay[]): SunSummary | null {
 
 // ---------------------------------------------------------------------------
 // NASA DONKI: catálogo de fulguraciones solares
-// https://api.nasa.gov  (DONKI / FLR)
+// https://ccmc.gsfc.nasa.gov/DONKI/WS/get/FLR  (público, sin clave, hasta 60 días por pedido)
 // ---------------------------------------------------------------------------
 
 export interface SolarFlare {
@@ -107,7 +107,8 @@ export interface SolarFlare {
 }
 
 /**
- * Copia guardada: las cinco fulguraciones más fuertes de 2024 vistas desde la Tierra.
+ * Copia guardada: las cinco fulguraciones más fuertes de 2024 vistas desde la Tierra,
+ * tomadas del catálogo DONKI (1.128 fulguraciones de 2024, bajadas el 15/11/2026).
  * La X12 que golpeó Marte el 20/05/2024 salió del lado del Sol que la Tierra no veía.
  */
 export const SAVED_FLARES: SolarFlare[] = [
@@ -189,8 +190,8 @@ export async function loadSunDays(): Promise<{ origin: NasaDataOrigin; days: Sun
 export async function loadFlares(): Promise<{ origin: NasaDataOrigin; flares: SolarFlare[] }> {
   try {
     const url =
-      'https://api.nasa.gov/DONKI/FLR' +
-      `?startDate=${dashedDate(daysAgo(30))}&endDate=${dashedDate(daysAgo(0))}&api_key=DEMO_KEY`;
+      'https://ccmc.gsfc.nasa.gov/DONKI/WS/get/FLR' +
+      `?startDate=${dashedDate(daysAgo(30))}&endDate=${dashedDate(daysAgo(0))}`;
     const flares = parseFlaresResponse(await fetchJson(url));
     if (flares.length > 0) return { origin: 'live', flares };
     console.warn('NASA DONKI no devolvió fulguraciones; se usa la copia guardada.');
