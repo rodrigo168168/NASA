@@ -37,6 +37,12 @@ import {
 } from './services/careerHistory';
 import { CareerHistoryPanel } from './components/CareerHistoryPanel';
 import { MissionFeedbackPanel } from './components/MissionFeedbackPanel';
+import {
+  InstructorQuestionsEditor,
+  InstructorQuestionsNow,
+  InstructorQuestionsReview,
+} from './components/InstructorQuestions';
+import { loadQuestionsText, saveQuestionsText, scheduleQuestions } from './services/instructorQuestions';
 import { soundService } from './services/soundService';
 
 // Icons
@@ -454,6 +460,8 @@ export function App() {
   const [selectedHistoricalId, setSelectedHistoricalId] = useState<string | null>(null);
   const [solesInput, setSolesInput] = useState(15);
   const [careerHistory, setCareerHistory] = useState<CareerRecord[]>(() => loadCareerHistory());
+  const [questionsText, setQuestionsText] = useState(() => loadQuestionsText());
+  const [questionAnswers, setQuestionAnswers] = useState<Record<string, string>>({});
   const carreraGuardada = useRef(false);
 
   const [gameState, setGameState] = useState<GameState>(() => {
@@ -776,9 +784,12 @@ export function App() {
   const handleRestart = () => {
     soundService.playClick();
     storageService.clearSave();
+    setQuestionAnswers({});
     setLastDecisionFeedback(null);
     setGameState((prev) => ({ ...prev, status: 'welcome' }));
   };
+
+  const instructorQuestions = scheduleQuestions(questionsText, gameState.maxCycles);
 
   // ¿Alcanzan las horas de hoy y los repuestos para este trabajo?
   const alcanza = (horas = 0, kg = 0) =>
@@ -1426,6 +1437,14 @@ export function App() {
             </p>
           </div>
 
+          <InstructorQuestionsEditor
+            value={questionsText}
+            onChange={(text) => {
+              setQuestionsText(text);
+              saveQuestionsText(text);
+            }}
+          />
+
           <CareerHistoryPanel
             records={careerHistory}
             commander={commanderName}
@@ -1557,6 +1576,12 @@ export function App() {
 
           <MissionFeedbackPanel state={gameState} />
 
+          <InstructorQuestionsReview
+            questions={instructorQuestions}
+            answers={questionAnswers}
+            solReached={gameState.cycle}
+          />
+
           <button
             onClick={handleRestart}
             className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-emerald-400 hover:from-amber-300 hover:to-emerald-300 text-space-950 font-heading font-black text-sm tracking-wider uppercase shadow-xl shadow-amber-500/20 transition-all active:scale-95"
@@ -1606,6 +1631,12 @@ export function App() {
           </div>
 
           <MissionFeedbackPanel state={gameState} />
+
+          <InstructorQuestionsReview
+            questions={instructorQuestions}
+            answers={questionAnswers}
+            solReached={gameState.cycle}
+          />
 
           <button
             onClick={handleRestart}
@@ -2074,6 +2105,12 @@ export function App() {
                     : `Todos los sistemas están listos para cerrar el Sol ${gameState.cycle}. Revisa tu táctica abajo y pulsa "SIMULAR SOL".`}
                 </p>
                 {currentEvent?.id === 'solar_flare_lunar' && <RealFlareNote />}
+                <InstructorQuestionsNow
+                  questions={instructorQuestions}
+                  sol={gameState.cycle}
+                  answers={questionAnswers}
+                  onAnswer={(question, answer) => setQuestionAnswers((prev) => ({ ...prev, [question]: answer }))}
+                />
               </div>
 
               {/* Choices List with Visual Consequence Pills (Copero Dilemma Buttons) */}
