@@ -90,6 +90,8 @@ export interface CommanderSetup {
 }
 
 const COUNTRIES = [
+  // Todas las nacionalidades salvo los adversarios extranjeros de EE. UU.
+  // (China, Corea del Norte, Cuba, Irán, Rusia y Venezuela). Primero los de siempre.
   { flag: '🇧🇴', name: 'Bolivia' },
   { flag: '🇦🇷', name: 'Argentina' },
   { flag: '🇲🇽', name: 'México' },
@@ -99,6 +101,189 @@ const COUNTRIES = [
   { flag: '🇵🇪', name: 'Perú' },
   { flag: '🇺🇾', name: 'Uruguay' },
   { flag: '🇺🇸', name: 'EE. UU.' },
+  { flag: '🇦🇫', name: 'Afganistán' },
+  { flag: '🇦🇱', name: 'Albania' },
+  { flag: '🇩🇪', name: 'Alemania' },
+  { flag: '🇦🇩', name: 'Andorra' },
+  { flag: '🇦🇴', name: 'Angola' },
+  { flag: '🇦🇬', name: 'Antigua y Barbuda' },
+  { flag: '🇸🇦', name: 'Arabia Saudí' },
+  { flag: '🇩🇿', name: 'Argelia' },
+  { flag: '🇦🇲', name: 'Armenia' },
+  { flag: '🇦🇺', name: 'Australia' },
+  { flag: '🇦🇹', name: 'Austria' },
+  { flag: '🇦🇿', name: 'Azerbaiyán' },
+  { flag: '🇧🇸', name: 'Bahamas' },
+  { flag: '🇧🇩', name: 'Bangladés' },
+  { flag: '🇧🇧', name: 'Barbados' },
+  { flag: '🇧🇭', name: 'Baréin' },
+  { flag: '🇧🇪', name: 'Bélgica' },
+  { flag: '🇧🇿', name: 'Belice' },
+  { flag: '🇧🇯', name: 'Benín' },
+  { flag: '🇧🇾', name: 'Bielorrusia' },
+  { flag: '🇧🇦', name: 'Bosnia y Herzegovina' },
+  { flag: '🇧🇼', name: 'Botsuana' },
+  { flag: '🇧🇷', name: 'Brasil' },
+  { flag: '🇧🇳', name: 'Brunéi' },
+  { flag: '🇧🇬', name: 'Bulgaria' },
+  { flag: '🇧🇫', name: 'Burkina Faso' },
+  { flag: '🇧🇮', name: 'Burundi' },
+  { flag: '🇧🇹', name: 'Bután' },
+  { flag: '🇨🇻', name: 'Cabo Verde' },
+  { flag: '🇰🇭', name: 'Camboya' },
+  { flag: '🇨🇲', name: 'Camerún' },
+  { flag: '🇨🇦', name: 'Canadá' },
+  { flag: '🇶🇦', name: 'Catar' },
+  { flag: '🇹🇩', name: 'Chad' },
+  { flag: '🇨🇿', name: 'Chequia' },
+  { flag: '🇨🇾', name: 'Chipre' },
+  { flag: '🇻🇦', name: 'Ciudad del Vaticano' },
+  { flag: '🇰🇲', name: 'Comoras' },
+  { flag: '🇨🇬', name: 'Congo' },
+  { flag: '🇰🇷', name: 'Corea del Sur' },
+  { flag: '🇨🇷', name: 'Costa Rica' },
+  { flag: '🇨🇮', name: 'Côte d’Ivoire' },
+  { flag: '🇭🇷', name: 'Croacia' },
+  { flag: '🇩🇰', name: 'Dinamarca' },
+  { flag: '🇩🇲', name: 'Dominica' },
+  { flag: '🇪🇨', name: 'Ecuador' },
+  { flag: '🇪🇬', name: 'Egipto' },
+  { flag: '🇸🇻', name: 'El Salvador' },
+  { flag: '🇦🇪', name: 'Emiratos Árabes Unidos' },
+  { flag: '🇪🇷', name: 'Eritrea' },
+  { flag: '🇸🇰', name: 'Eslovaquia' },
+  { flag: '🇸🇮', name: 'Eslovenia' },
+  { flag: '🇪🇪', name: 'Estonia' },
+  { flag: '🇸🇿', name: 'Esuatini' },
+  { flag: '🇪🇹', name: 'Etiopía' },
+  { flag: '🇵🇭', name: 'Filipinas' },
+  { flag: '🇫🇮', name: 'Finlandia' },
+  { flag: '🇫🇯', name: 'Fiyi' },
+  { flag: '🇫🇷', name: 'Francia' },
+  { flag: '🇬🇦', name: 'Gabón' },
+  { flag: '🇬🇲', name: 'Gambia' },
+  { flag: '🇬🇪', name: 'Georgia' },
+  { flag: '🇬🇭', name: 'Ghana' },
+  { flag: '🇬🇩', name: 'Granada' },
+  { flag: '🇬🇷', name: 'Grecia' },
+  { flag: '🇬🇹', name: 'Guatemala' },
+  { flag: '🇬🇳', name: 'Guinea' },
+  { flag: '🇬🇶', name: 'Guinea Ecuatorial' },
+  { flag: '🇬🇼', name: 'Guinea-Bisáu' },
+  { flag: '🇬🇾', name: 'Guyana' },
+  { flag: '🇭🇹', name: 'Haití' },
+  { flag: '🇭🇳', name: 'Honduras' },
+  { flag: '🇭🇺', name: 'Hungría' },
+  { flag: '🇮🇳', name: 'India' },
+  { flag: '🇮🇩', name: 'Indonesia' },
+  { flag: '🇮🇶', name: 'Irak' },
+  { flag: '🇮🇪', name: 'Irlanda' },
+  { flag: '🇮🇸', name: 'Islandia' },
+  { flag: '🇲🇭', name: 'Islas Marshall' },
+  { flag: '🇸🇧', name: 'Islas Salomón' },
+  { flag: '🇮🇱', name: 'Israel' },
+  { flag: '🇮🇹', name: 'Italia' },
+  { flag: '🇯🇲', name: 'Jamaica' },
+  { flag: '🇯🇵', name: 'Japón' },
+  { flag: '🇯🇴', name: 'Jordania' },
+  { flag: '🇰🇿', name: 'Kazajistán' },
+  { flag: '🇰🇪', name: 'Kenia' },
+  { flag: '🇰🇬', name: 'Kirguistán' },
+  { flag: '🇰🇮', name: 'Kiribati' },
+  { flag: '🇽🇰', name: 'Kosovo' },
+  { flag: '🇰🇼', name: 'Kuwait' },
+  { flag: '🇱🇦', name: 'Laos' },
+  { flag: '🇱🇸', name: 'Lesoto' },
+  { flag: '🇱🇻', name: 'Letonia' },
+  { flag: '🇱🇧', name: 'Líbano' },
+  { flag: '🇱🇷', name: 'Liberia' },
+  { flag: '🇱🇾', name: 'Libia' },
+  { flag: '🇱🇮', name: 'Liechtenstein' },
+  { flag: '🇱🇹', name: 'Lituania' },
+  { flag: '🇱🇺', name: 'Luxemburgo' },
+  { flag: '🇲🇰', name: 'Macedonia del Norte' },
+  { flag: '🇲🇬', name: 'Madagascar' },
+  { flag: '🇲🇾', name: 'Malasia' },
+  { flag: '🇲🇼', name: 'Malaui' },
+  { flag: '🇲🇻', name: 'Maldivas' },
+  { flag: '🇲🇱', name: 'Mali' },
+  { flag: '🇲🇹', name: 'Malta' },
+  { flag: '🇲🇦', name: 'Marruecos' },
+  { flag: '🇲🇺', name: 'Mauricio' },
+  { flag: '🇲🇷', name: 'Mauritania' },
+  { flag: '🇫🇲', name: 'Micronesia' },
+  { flag: '🇲🇩', name: 'Moldavia' },
+  { flag: '🇲🇨', name: 'Mónaco' },
+  { flag: '🇲🇳', name: 'Mongolia' },
+  { flag: '🇲🇪', name: 'Montenegro' },
+  { flag: '🇲🇿', name: 'Mozambique' },
+  { flag: '🇲🇲', name: 'Myanmar (Birmania)' },
+  { flag: '🇳🇦', name: 'Namibia' },
+  { flag: '🇳🇷', name: 'Nauru' },
+  { flag: '🇳🇵', name: 'Nepal' },
+  { flag: '🇳🇮', name: 'Nicaragua' },
+  { flag: '🇳🇪', name: 'Níger' },
+  { flag: '🇳🇬', name: 'Nigeria' },
+  { flag: '🇳🇴', name: 'Noruega' },
+  { flag: '🇳🇿', name: 'Nueva Zelanda' },
+  { flag: '🇴🇲', name: 'Omán' },
+  { flag: '🇳🇱', name: 'Países Bajos' },
+  { flag: '🇵🇰', name: 'Pakistán' },
+  { flag: '🇵🇼', name: 'Palaos' },
+  { flag: '🇵🇸', name: 'Palestina' },
+  { flag: '🇵🇦', name: 'Panamá' },
+  { flag: '🇵🇬', name: 'Papúa Nueva Guinea' },
+  { flag: '🇵🇾', name: 'Paraguay' },
+  { flag: '🇵🇱', name: 'Polonia' },
+  { flag: '🇵🇹', name: 'Portugal' },
+  { flag: '🇵🇷', name: 'Puerto Rico' },
+  { flag: '🇬🇧', name: 'Reino Unido' },
+  { flag: '🇨🇫', name: 'República Centroafricana' },
+  { flag: '🇨🇩', name: 'República Democrática del Congo' },
+  { flag: '🇩🇴', name: 'República Dominicana' },
+  { flag: '🇷🇼', name: 'Ruanda' },
+  { flag: '🇷🇴', name: 'Rumanía' },
+  { flag: '🇼🇸', name: 'Samoa' },
+  { flag: '🇰🇳', name: 'San Cristóbal y Nieves' },
+  { flag: '🇸🇲', name: 'San Marino' },
+  { flag: '🇻🇨', name: 'San Vicente y las Granadinas' },
+  { flag: '🇱🇨', name: 'Santa Lucía' },
+  { flag: '🇸🇹', name: 'Santo Tomé y Príncipe' },
+  { flag: '🇸🇳', name: 'Senegal' },
+  { flag: '🇷🇸', name: 'Serbia' },
+  { flag: '🇸🇨', name: 'Seychelles' },
+  { flag: '🇸🇱', name: 'Sierra Leona' },
+  { flag: '🇸🇬', name: 'Singapur' },
+  { flag: '🇸🇾', name: 'Siria' },
+  { flag: '🇸🇴', name: 'Somalia' },
+  { flag: '🇱🇰', name: 'Sri Lanka' },
+  { flag: '🇿🇦', name: 'Sudáfrica' },
+  { flag: '🇸🇩', name: 'Sudán' },
+  { flag: '🇸🇸', name: 'Sudán del Sur' },
+  { flag: '🇸🇪', name: 'Suecia' },
+  { flag: '🇨🇭', name: 'Suiza' },
+  { flag: '🇸🇷', name: 'Surinam' },
+  { flag: '🇹🇭', name: 'Tailandia' },
+  { flag: '🇹🇼', name: 'Taiwán' },
+  { flag: '🇹🇿', name: 'Tanzania' },
+  { flag: '🇹🇯', name: 'Tayikistán' },
+  { flag: '🇹🇱', name: 'Timor-Leste' },
+  { flag: '🇹🇬', name: 'Togo' },
+  { flag: '🇹🇴', name: 'Tonga' },
+  { flag: '🇹🇹', name: 'Trinidad y Tobago' },
+  { flag: '🇹🇳', name: 'Túnez' },
+  { flag: '🇹🇲', name: 'Turkmenistán' },
+  { flag: '🇹🇷', name: 'Turquía' },
+  { flag: '🇹🇻', name: 'Tuvalu' },
+  { flag: '🇺🇦', name: 'Ucrania' },
+  { flag: '🇺🇬', name: 'Uganda' },
+  { flag: '🇺🇿', name: 'Uzbekistán' },
+  { flag: '🇻🇺', name: 'Vanuatu' },
+  { flag: '🇻🇳', name: 'Vietnam' },
+  { flag: '🇾🇪', name: 'Yemen' },
+  { flag: '🇩🇯', name: 'Yibuti' },
+  { flag: '🇿🇲', name: 'Zambia' },
+  { flag: '🇿🇼', name: 'Zimbabue' },
 ];
 
 const RANDOM_NAMES = [
@@ -970,27 +1155,26 @@ export function App() {
                 </button>
               </div>
 
-              {/* Country Selector Pills */}
-              <div className="sm:col-span-5 flex items-center gap-1 overflow-x-auto bg-[#080d1a] p-1.5 rounded-xl border border-slate-800">
+              {/* Country Selector: todas las nacionalidades en un desplegable */}
+              <select
+                value={selectedCountry.name}
+                onChange={(e) => {
+                  const c = COUNTRIES.find((x) => x.name === e.target.value);
+                  if (c) {
+                    soundService.playClick();
+                    setSelectedCountry(c);
+                  }
+                }}
+                title="Nacionalidad"
+                aria-label="Nacionalidad"
+                className="sm:col-span-5 bg-[#080d1a] border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2.5 text-sm font-heading font-bold text-white focus:outline-none"
+              >
                 {COUNTRIES.map((c) => (
-                  <button
-                    key={c.name}
-                    type="button"
-                    onClick={() => {
-                      soundService.playClick();
-                      setSelectedCountry(c);
-                    }}
-                    title={c.name}
-                    className={`px-2 py-1 rounded-lg text-sm transition-all shrink-0 ${
-                      selectedCountry.name === c.name
-                        ? 'bg-cyan-500/30 border border-cyan-400 scale-110'
-                        : 'opacity-60 hover:opacity-100'
-                    }`}
-                  >
-                    {c.flag}
-                  </button>
+                  <option key={c.name} value={c.name} className="bg-[#080d1a]">
+                    {c.flag} {c.name}
+                  </option>
                 ))}
-              </div>
+              </select>
             </div>
           </div>
 
