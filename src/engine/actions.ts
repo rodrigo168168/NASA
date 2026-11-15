@@ -5,7 +5,8 @@ export const MISSION_ACTIONS: MissionAction[] = [
     id: 'clean_solar_panels',
     name: 'Limpieza Electrostática de Paneles Solares',
     category: 'maintenance',
-    costCredits: 120,
+    costHours: 6,
+    costKg: 2,
     energyCostKw: 15,
     executionCycles: 1,
     expectedBenefit: 'Restaura la eficiencia fotovoltaica al 100% y recupera la salud de los paneles.',
@@ -29,7 +30,8 @@ export const MISSION_ACTIONS: MissionAction[] = [
         },
         mainResources: {
           ...state.mainResources,
-          credits: state.mainResources.credits - 120,
+          spareKg: Math.max(0, state.mainResources.spareKg - 2),
+          crewHours: Math.max(0, state.mainResources.crewHours - 6),
         },
       };
     },
@@ -38,11 +40,12 @@ export const MISSION_ACTIONS: MissionAction[] = [
     id: 'upgrade_eclss_water',
     name: 'Mejora del Reactor Sabatier y Filtración Catalítica',
     category: 'upgrade',
-    costCredits: 380,
+    costHours: 16,
+    costKg: 60,
     energyCostKw: 25,
     executionCycles: 1,
     expectedBenefit: 'Aumenta permanentemente la eficiencia de reciclaje de agua al 95% y genera +15 kg de O2 de reserva.',
-    risksAndConsequences: 'Inversión presupuestaria considerable; requiere calibración cuidadosa del lecho catalítico.',
+    risksAndConsequences: 'Se lleva 60 kg de repuestos y dos días de trabajo de una persona; requiere calibración cuidadosa del lecho catalítico.',
     stemExplanation:
       'La recuperación de agua en la Estación Espacial Internacional (ISS) supera el 93% mediante descompresión al vacío y ósmosis inversa por etapas. En Marte, cada gota recuperada reduce la necesidad de minería criogénica intensiva.',
     apply: (state: GameState) => {
@@ -64,7 +67,8 @@ export const MISSION_ACTIONS: MissionAction[] = [
         },
         mainResources: {
           ...state.mainResources,
-          credits: state.mainResources.credits - 380,
+          spareKg: Math.max(0, state.mainResources.spareKg - 60),
+          crewHours: Math.max(0, state.mainResources.crewHours - 16),
         },
         stemDiscoveriesUnlocked: [...state.stemDiscoveriesUnlocked, 'Bucle Cerrado ECLSS Avanzado'],
       };
@@ -74,7 +78,8 @@ export const MISSION_ACTIONS: MissionAction[] = [
     id: 'expand_aeroponics_greenhouse',
     name: 'Expansión de Invernadero Aeropónico Vertical',
     category: 'upgrade',
-    costCredits: 350,
+    costHours: 14,
+    costKg: 50,
     energyCostKw: 30,
     executionCycles: 1,
     expectedBenefit: '+40% en producción de alimentos frescos y +1.5 kg O2 por ciclo mediante fotosíntesis biológica.',
@@ -100,7 +105,8 @@ export const MISSION_ACTIONS: MissionAction[] = [
         },
         mainResources: {
           ...state.mainResources,
-          credits: state.mainResources.credits - 350,
+          spareKg: Math.max(0, state.mainResources.spareKg - 50),
+          crewHours: Math.max(0, state.mainResources.crewHours - 14),
         },
         stemDiscoveriesUnlocked: [...state.stemDiscoveriesUnlocked, 'Cultivo Aeropónico Espacial'],
       };
@@ -110,7 +116,8 @@ export const MISSION_ACTIONS: MissionAction[] = [
     id: 'sinter_regolith_radiation_shield',
     name: 'Sinterizado de Regolito y Bóveda Anti-Radiación',
     category: 'upgrade',
-    costCredits: 420,
+    costHours: 18,
+    costKg: 10,
     energyCostKw: 45,
     executionCycles: 1,
     expectedBenefit: 'Aumenta la integridad del escudo al 100% y reduce la dosis ionizante por ciclo a la mitad.',
@@ -136,7 +143,8 @@ export const MISSION_ACTIONS: MissionAction[] = [
         },
         mainResources: {
           ...state.mainResources,
-          credits: state.mainResources.credits - 420,
+          spareKg: Math.max(0, state.mainResources.spareKg - 10),
+          crewHours: Math.max(0, state.mainResources.crewHours - 18),
         },
         stemDiscoveriesUnlocked: [...state.stemDiscoveriesUnlocked, 'Blindaje por Sinterizado de Regolito'],
       };
@@ -146,11 +154,12 @@ export const MISSION_ACTIONS: MissionAction[] = [
     id: 'deploy_backup_generator',
     name: 'Ensamblar Generador Stirling / RTG de Respaldo',
     category: 'upgrade',
-    costCredits: 450,
+    costHours: 20,
+    costKg: 120,
     energyCostKw: 0,
     executionCycles: 1,
     expectedBenefit: 'Proporciona +35 kW continuos de energía ininterrumpida de fondo (inmune a tormentas o noche).',
-    risksAndConsequences: 'Inversión de alto costo que agota gran parte del presupuesto inicial.',
+    risksAndConsequences: 'Se lleva 120 kg de repuestos, gran parte de lo que trajo la misión, y casi todas las horas de un sol.',
     stemExplanation:
       'Los convertidores Stirling avanzados (ASRG) utilizan el calor de decaimiento radiactivo para expandir y contraer gas helio, moviendo un pistón lineal con una eficiencia cuatro veces superior a los termopares convencionales.',
     apply: (state: GameState) => {
@@ -161,7 +170,8 @@ export const MISSION_ACTIONS: MissionAction[] = [
         },
         mainResources: {
           ...state.mainResources,
-          credits: state.mainResources.credits - 450,
+          spareKg: Math.max(0, state.mainResources.spareKg - 120),
+          crewHours: Math.max(0, state.mainResources.crewHours - 20),
         },
         stemDiscoveriesUnlocked: [...state.stemDiscoveriesUnlocked, 'Generación Stirling Espacial'],
       };
@@ -171,7 +181,8 @@ export const MISSION_ACTIONS: MissionAction[] = [
     id: 'drill_subsurface_ice',
     name: 'Perforación y Extracción de Hielo Subterráneo',
     category: 'emergency',
-    costCredits: 220,
+    costHours: 12,
+    costKg: 15,
     energyCostKw: 35,
     executionCycles: 1,
     expectedBenefit: '+70 Litros de agua purificada inyectados de inmediato en los tanques de la colonia.',
@@ -187,7 +198,8 @@ export const MISSION_ACTIONS: MissionAction[] = [
         },
         mainResources: {
           ...state.mainResources,
-          credits: state.mainResources.credits - 220,
+          spareKg: Math.max(0, state.mainResources.spareKg - 15),
+          crewHours: Math.max(0, state.mainResources.crewHours - 12),
         },
       };
     },
@@ -196,7 +208,8 @@ export const MISSION_ACTIONS: MissionAction[] = [
     id: 'preventive_maintenance_overhaul',
     name: 'Mantenimiento Preventivo General de la Base',
     category: 'maintenance',
-    costCredits: 180,
+    costHours: 16,
+    costKg: 30,
     energyCostKw: 10,
     executionCycles: 1,
     expectedBenefit: 'Restaura +20% de salud estructural a todos los módulos y sella micro-fisuras.',
@@ -216,7 +229,8 @@ export const MISSION_ACTIONS: MissionAction[] = [
         facilities: nextFacilities,
         mainResources: {
           ...state.mainResources,
-          credits: state.mainResources.credits - 180,
+          spareKg: Math.max(0, state.mainResources.spareKg - 30),
+          crewHours: Math.max(0, state.mainResources.crewHours - 16),
         },
       };
     },
@@ -225,7 +239,8 @@ export const MISSION_ACTIONS: MissionAction[] = [
     id: 'ration_and_crew_telemetry_check',
     name: 'Protocolo de Racionamiento y Descanso Médico',
     category: 'emergency',
-    costCredits: 40,
+    costHours: 2,
+    costKg: 0,
     energyCostKw: 0,
     executionCycles: 1,
     expectedBenefit: 'Reduce el consumo de alimentos en un 30% temporalmente y restaura +10% de salud a la tripulación.',
@@ -242,7 +257,8 @@ export const MISSION_ACTIONS: MissionAction[] = [
         crew: updatedCrew,
         mainResources: {
           ...state.mainResources,
-          credits: state.mainResources.credits - 40,
+          spareKg: Math.max(0, state.mainResources.spareKg - 0),
+          crewHours: Math.max(0, state.mainResources.crewHours - 2),
         },
       };
     },

@@ -41,7 +41,10 @@ function createMockState(overrides: Partial<GameState> = {}): GameState {
       powerConsumptionKw: 95,
       lifeSupportPercent: 80,
       radiationProtectionPercent: 90,
-      credits: 2000,
+      crewHours: 26,
+      crewHoursMax: 26,
+      spareKg: 300,
+      scienceHours: 0,
     },
     policy: 'SURVIVAL',
     activeEvent: null,
@@ -153,9 +156,9 @@ describe('SimulationEngine Comprehensive Unit Tests', () => {
     expect(result.nextState.victorySummary?.finalScore).toBeGreaterThan(0);
   });
 
-  it('should correctly apply engineering actions and deduct credits', () => {
+  it('should correctly apply engineering actions and deduct crew hours and spare parts', () => {
     const state = createMockState({
-      mainResources: { ...createMockState().mainResources, credits: 1000 },
+      mainResources: { ...createMockState().mainResources, crewHours: 26, spareKg: 100 },
       subResources: { ...createMockState().subResources, solarEfficiency: 0.6 },
     });
 
@@ -164,7 +167,8 @@ describe('SimulationEngine Comprehensive Unit Tests', () => {
 
     if (cleanAction) {
       const updates = cleanAction.apply(state);
-      expect(updates.mainResources?.credits).toBe(1000 - cleanAction.costCredits);
+      expect(updates.mainResources?.crewHours).toBe(26 - cleanAction.costHours);
+      expect(updates.mainResources?.spareKg).toBe(100 - cleanAction.costKg);
       expect(updates.subResources?.solarEfficiency).toBe(1.0);
     }
   });

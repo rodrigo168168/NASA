@@ -133,7 +133,6 @@ export const PLANET_SCENARIOS: Record<'mars' | 'moon', PlanetScenario> = {
       water: 50, // Litros
       food: 14, // kg
       battery: 145, // kWh
-      credits: 650, // k$
     },
     stemFocus: 'Utilización de recursos in-situ (ISRU), reacción Sabatier y mitigación de polvo electrostático.',
   },
@@ -154,7 +153,6 @@ export const PLANET_SCENARIOS: Record<'mars' | 'moon', PlanetScenario> = {
       water: 44,
       food: 14,
       battery: 150,
-      credits: 650,
     },
     stemFocus: 'Blindaje térmico criogénico, protección por regolito sinterizado y gestión de energía en oscuridad.',
   },

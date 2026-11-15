@@ -24,6 +24,7 @@ import {
   eventoDelSol,
 } from './engine/misiones';
 import { normalizarCodigo } from './engine/rng';
+import { horasDeTripulacion, REPUESTOS_INICIALES_KG, REPUESTOS_LOGISTICA_KG } from './engine/recursos';
 import { RealFlareNote } from './components/RealFlareNote';
 import { MISSION_ACTIONS } from './engine/actions';
 import { storageService } from './services/storageService';
@@ -43,7 +44,6 @@ import {
   Wind,
   Droplets,
   Shield,
-  Coins,
   Sparkles,
   Rocket,
   RotateCcw,
@@ -322,10 +322,10 @@ const SPECIALTIES: {
   },
   {
     id: 'commander',
-    name: 'Estratega de Blindaje & Fondos',
-    badge: '🛡️ +$600k y Escudo 100%',
-    description: 'Veterano con respaldo financiero de la NASA y cúpula antirradiación reforzada.',
-    perks: ['+$600k Presupuesto extra', 'Escudo de Radiación al 100%', 'Moral inicial al 100%'],
+    name: 'Logística & Blindaje',
+    badge: '📦 +80 kg y Escudo 100%',
+    description: 'Veterano en logística de misión: armó la carga con repuestos de más y reforzó la cúpula antirradiación.',
+    perks: ['+80 kg de repuestos y materiales', 'Escudo de Radiación al 100%', 'Moral inicial al 100%'],
     color: 'border-amber-500/50 bg-amber-950/30 text-amber-300',
   },
 ];
@@ -345,7 +345,7 @@ export function createInitialGameState(
   let water = Math.round(planet.initialResources.water * carga);
   let food = Math.round(planet.initialResources.food * carga);
   let battery = planet.initialResources.battery;
-  let credits = Math.round(planet.initialResources.credits * carga);
+  let spareKg = Math.round(REPUESTOS_INICIALES_KG * carga);
   let waterRecycling = 0.85;
   let solarEff = 0.95;
   let shield = 92;
@@ -361,7 +361,7 @@ export function createInitialGameState(
     food = Math.min(250, food + 40);
     waterRecycling = 0.92;
   } else if (commander?.specialtyId === 'commander') {
-    credits += 600;
+    spareKg += REPUESTOS_LOGISTICA_KG;
     shield = 100;
     crew.forEach((c: { morale: number; health: number }) => {
       c.morale = 100;
@@ -419,7 +419,10 @@ export function createInitialGameState(
       powerConsumptionKw: 105.0,
       lifeSupportPercent: Math.round(((oxygen / 100 + water / 300 + food / 250) / 3) * 100),
       radiationProtectionPercent: shield,
-      credits,
+      crewHours: horasDeTripulacion(crew),
+      crewHoursMax: horasDeTripulacion(crew),
+      spareKg,
+      scienceHours: 0,
     },
     policy: 'SURVIVAL',
     activeEvent: firstEvent,
@@ -776,21 +779,36 @@ export function App() {
     setGameState((prev) => ({ ...prev, status: 'welcome' }));
   };
 
+  // ¿Alcanzan las horas de hoy y los repuestos para este trabajo?
+  const alcanza = (horas = 0, kg = 0) =>
+    gameState.mainResources.crewHours >= horas && gameState.mainResources.spareKg >= kg;
+  const costoTexto = (horas = 0, kg = 0) =>
+    [horas > 0 ? `-${horas} h` : '', kg > 0 ? `-${kg} kg` : ''].filter(Boolean).join(' · ') || 'sin costo';
+  const faltaTexto = (horas = 0, kg = 0) =>
+    gameState.mainResources.crewHours < horas ? `Faltan horas (${horas} h)` : `Faltan repuestos (${kg} kg)`;
+
   // Format consequence badges for any choice so the user sees exact +/- effects BEFORE clicking
   const getChoiceBadges = (choice: GameEventChoice) => {
     const badges: { label: string; positive: boolean }[] = [];
     const c = choice.consequences;
-    const netCredits = (c.creditsDelta || 0);
-
-    if (netCredits !== 0) {
+    const horasNetas = (c.hoursDelta || 0) - (choice.costHours || 0);
+    if (horasNetas !== 0) {
       badges.push({
-        label: `💰 ${netCredits > 0 ? '+' : ''}$${netCredits}k`,
-        positive: netCredits > 0,
+        label: `⏱️ ${horasNetas > 0 ? '+' : ''}${horasNetas} h tripulación`,
+        positive: horasNetas > 0,
       });
-    } else if (choice.costCredits && choice.costCredits > 0) {
+    }
+    const kgNetos = (c.spareKgDelta || 0) - (choice.costKg || 0);
+    if (kgNetos !== 0) {
       badges.push({
-        label: `💰 -$${choice.costCredits}k`,
-        positive: false,
+        label: `📦 ${kgNetos > 0 ? '+' : ''}${kgNetos} kg repuestos`,
+        positive: kgNetos > 0,
+      });
+    }
+    if (c.scienceHoursDelta) {
+      badges.push({
+        label: `🔬 +${c.scienceHoursDelta} h de ciencia`,
+        positive: true,
       });
     }
 
@@ -853,7 +871,9 @@ export function App() {
 
     setGameState((prev) => {
       const c = choice.consequences;
-      const curCredits = Math.max(0, prev.mainResources.credits + (c.creditsDelta ?? -(choice.costCredits || 0)));
+      const curHours = Math.max(0, prev.mainResources.crewHours - (choice.costHours || 0) + (c.hoursDelta || 0));
+      const curKg = Math.max(0, prev.mainResources.spareKg - (choice.costKg || 0) + (c.spareKgDelta || 0));
+      const curScience = prev.mainResources.scienceHours + (c.scienceHoursDelta || 0);
       const curBattery = Math.max(
         0,
         Math.min(
@@ -932,7 +952,9 @@ export function App() {
           energyPercent,
           lifeSupportPercent,
           radiationProtectionPercent: curShield,
-          credits: curCredits,
+          crewHours: curHours,
+          spareKg: curKg,
+          scienceHours: curScience,
         },
         decisionsLog: [
           ...prev.decisionsLog,
@@ -959,7 +981,7 @@ export function App() {
     soundService.playCycleAdvance();
 
     const prevSub = gameState.subResources;
-    const prevCreds = gameState.mainResources.credits;
+    const prevKg = gameState.mainResources.spareKg;
 
     setTimeout(() => {
       const { nextState, warnings } = avanzarSolConDatosReales(gameState);
@@ -996,7 +1018,8 @@ export function App() {
         shieldDelta: Math.round(
           nextState.subResources.shieldIntegrity - prevSub.shieldIntegrity
         ),
-        creditsDelta: nextState.mainResources.credits - prevCreds,
+        spareKgDelta: nextState.mainResources.spareKg - prevKg,
+        scienceHours: nextState.mainResources.scienceHours,
         headline:
           warnings.length > 0
             ? warnings[0]
@@ -1498,9 +1521,9 @@ export function App() {
               </span>
             </div>
             <div className="bg-[#080d1a] p-3 rounded-2xl border border-slate-800">
-              <span className="text-slate-500 text-[9px] uppercase block">Fondos Finales</span>
+              <span className="text-slate-500 text-[9px] uppercase block">Ciencia y repuestos</span>
               <span className="text-base font-heading font-black text-amber-300">
-                ${gameState.mainResources.credits}k
+                {summary.scienceHours} h · {summary.spareKgLeft} kg
               </span>
             </div>
           </div>
@@ -1756,11 +1779,11 @@ export function App() {
                 </div>
               </div>
 
-              {/* Budget Pill */}
+              {/* Horas de tripulación y repuestos */}
               <div className="pl-3 border-l border-slate-800 text-right font-mono">
-                <span className="text-[9px] text-slate-400 uppercase block">PRESUPUESTO</span>
+                <span className="text-[9px] text-slate-400 uppercase block">HORAS · REPUESTOS</span>
                 <span className="text-xs font-heading font-black text-amber-300 flex items-center gap-1">
-                  <Coins className="w-3 h-3 text-amber-400" /> ${gameState.mainResources.credits}k
+                  ⏱️ {gameState.mainResources.crewHours}/{gameState.mainResources.crewHoursMax} h · 📦 {gameState.mainResources.spareKg} kg
                 </span>
               </div>
             </div>
@@ -1870,8 +1893,7 @@ export function App() {
               {(() => {
                 const st = statItems.find((s) => s.id === selectedStatHelp)!;
                 const qAction = MISSION_ACTIONS.find((a) => a.id === st.quickActionId);
-                const canAfford =
-                  qAction && gameState.mainResources.credits >= qAction.costCredits;
+                const canAfford = qAction && alcanza(qAction.costHours, qAction.costKg);
                 return (
                   <>
                     <div className="flex items-center gap-2 text-slate-200 font-sans">
@@ -1895,7 +1917,7 @@ export function App() {
                               : 'bg-slate-800 text-slate-500 cursor-not-allowed'
                           }`}
                         >
-                          ⚡ {qAction.name} (-${qAction.costCredits}k)
+                          ⚡ {qAction.name} ({costoTexto(qAction.costHours, qAction.costKg)})
                         </button>
                       )}
                       <button
@@ -1949,13 +1971,13 @@ export function App() {
           </div>
 
           {suggestedAction &&
-            gameState.mainResources.credits >= suggestedAction.costCredits && (
+            alcanza(suggestedAction.costHours, suggestedAction.costKg) && (
               <button
                 type="button"
                 onClick={() => handleQuickAction(suggestedAction)}
                 className="px-3 py-1 rounded-xl bg-amber-400 hover:bg-amber-300 text-space-950 font-heading font-bold text-[11px] shrink-0 transition-transform active:scale-95"
               >
-                Solucionar ahora (-${suggestedAction.costCredits}k)
+                Solucionar ahora ({costoTexto(suggestedAction.costHours, suggestedAction.costKg)})
               </button>
             )}
         </div>
@@ -2024,8 +2046,10 @@ export function App() {
                   </span>
 
                   <span className="text-[11px] font-mono text-slate-400">
-                    Presupuesto disponible:{' '}
-                    <strong className="text-amber-300">${gameState.mainResources.credits}k</strong>
+                    Quedan hoy:{' '}
+                    <strong className="text-amber-300">
+                      {gameState.mainResources.crewHours} h de tripulación · {gameState.mainResources.spareKg} kg de repuestos
+                    </strong>
                   </span>
                 </div>
 
@@ -2054,8 +2078,8 @@ export function App() {
                     👇 Elige qué hacer (mira los efectos de cada opción):
                   </div>
                   {currentEvent.choices.map((choice) => {
-                    const cost = choice.costCredits || 0;
-                    const canAfford = gameState.mainResources.credits >= cost;
+                    const canAfford = alcanza(choice.costHours, choice.costKg);
+                    const falta = faltaTexto(choice.costHours, choice.costKg);
                     const badges = getChoiceBadges(choice);
 
                     return (
@@ -2077,7 +2101,7 @@ export function App() {
                           </span>
                           {!canAfford && (
                             <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-red-950 text-red-300 border border-red-500/40 shrink-0">
-                              Faltan fondos (${cost}k)
+                              {falta}
                             </span>
                           )}
                         </div>
@@ -2104,24 +2128,22 @@ export function App() {
                       </button>
                     );
                   })}
-                  {/* Sin presupuesto para ninguna opción: la partida no puede quedar trabada */}
-                  {currentEvent.choices.every(
-                    (choice) => gameState.mainResources.credits < (choice.costCredits || 0),
-                  ) && (
+                  {/* Sin horas ni repuestos para ninguna opción: la partida no puede quedar trabada */}
+                  {currentEvent.choices.every((choice) => !alcanza(choice.costHours, choice.costKg)) && (
                     <button
                       type="button"
                       onClick={() =>
                         handleEventChoice({
-                          id: `${currentEvent.id}-sin-fondos`,
+                          id: `${currentEvent.id}-sin-recursos`,
                           text: 'Seguir sin intervenir',
-                          description: 'El presupuesto no alcanza para ninguna opción.',
+                          description: 'No quedan horas de tripulación ni repuestos para ninguna opción.',
                           consequences: {
                             crewMoraleDelta: -5,
                             customMessage:
-                              'Sin presupuesto, la tripulación dejó pasar la situación sin intervenir. La moral bajó un poco.',
+                              'Sin horas ni repuestos, la tripulación dejó pasar la situación sin intervenir. La moral bajó un poco.',
                           },
                           stemLesson:
-                            'En una misión real el presupuesto también es un recurso vital: si se gasta todo antes de tiempo, se pierden oportunidades.',
+                            'En una misión real las horas de la tripulación son el recurso más escaso: cuatro personas dan unas 26 horas útiles por sol, y un repuesto que falta no llega hasta la próxima nave.',
                         })
                       }
                       className="w-full text-left p-3.5 sm:p-4 rounded-2xl border bg-amber-950/40 border-amber-500/50 hover:border-amber-300 shadow-lg transition-all active:scale-[0.99]"
@@ -2131,8 +2153,8 @@ export function App() {
                         Seguir sin intervenir
                       </span>
                       <p className="text-xs text-slate-300 font-sans pl-5 leading-snug mt-1">
-                        El presupuesto no alcanza para ninguna opción. La tripulación sigue adelante, con la moral un
-                        poco más baja (-5).
+                        No quedan horas ni repuestos para ninguna opción. La tripulación sigue adelante, con la moral
+                        un poco más baja (-5).
                       </p>
                     </button>
                   )}
@@ -2362,17 +2384,17 @@ export function App() {
                     🛠️ Tienda de Mejoras y Acciones Inmediatas
                   </h3>
                   <p className="text-xs text-slate-400 font-sans">
-                    Usa tu presupuesto para recargar recursos o subir el nivel de tu base sin gastar el turno.
+                    Cada trabajo gasta horas de la tripulación de este sol y kilos de repuestos. Las horas que sobren al cerrar el sol se van a ciencia.
                   </p>
                 </div>
                 <div className="px-3 py-1.5 rounded-xl bg-amber-950/60 border border-amber-400/40 font-mono text-xs text-amber-300 font-bold">
-                  Disponible: ${gameState.mainResources.credits}k
+                  ⏱️ {gameState.mainResources.crewHours} h · 📦 {gameState.mainResources.spareKg} kg
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {MISSION_ACTIONS.map((action) => {
-                  const canAfford = gameState.mainResources.credits >= action.costCredits;
+                  const canAfford = alcanza(action.costHours, action.costKg);
                   const hasBattery =
                     action.energyCostKw === 0 ||
                     gameState.subResources.batteryStorageCurrent >= action.energyCostKw;
@@ -2393,7 +2415,7 @@ export function App() {
                             {action.name}
                           </span>
                           <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-500/30 shrink-0">
-                            -${action.costCredits}k
+                            {costoTexto(action.costHours, action.costKg)}
                           </span>
                         </div>
                         <p className="text-xs text-emerald-300 font-sans leading-snug">

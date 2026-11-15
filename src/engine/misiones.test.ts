@@ -157,7 +157,8 @@ describe('Las misiones históricas son difíciles pero se pueden ganar', () => {
     for (let i = 0; i < 20 && estado.status === 'playing'; i++) {
       const ev = estado.activeEvent;
       if (ev) {
-        const c = ev.choices[Math.min(opcion, ev.choices.length - 1)].consequences;
+        const elegida = ev.choices[Math.min(opcion, ev.choices.length - 1)];
+        const c = elegida.consequences;
         const s = estado.subResources;
         const tope = (v: number, max: number) => Math.max(0, Math.min(max, v));
         estado = {
@@ -178,7 +179,9 @@ describe('Las misiones históricas son difíciles pero se pueden ganar', () => {
           },
           mainResources: {
             ...estado.mainResources,
-            credits: Math.max(0, estado.mainResources.credits + (c.creditsDelta || 0)),
+            crewHours: Math.max(0, estado.mainResources.crewHours - (elegida.costHours || 0) + (c.hoursDelta || 0)),
+            spareKg: Math.max(0, estado.mainResources.spareKg - (elegida.costKg || 0) + (c.spareKgDelta || 0)),
+            scienceHours: estado.mainResources.scienceHours + (c.scienceHoursDelta || 0),
           },
         };
       }

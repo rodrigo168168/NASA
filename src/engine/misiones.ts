@@ -11,6 +11,7 @@ import { GameEvent, GameState, PlanetType } from '../domain/types';
 import { GAME_EVENTS_DECK, pickNextCycleEvent } from './events';
 import { advanceSimulationCycle, SimulationStepResult } from './simulationEngine';
 import { crearGenerador, normalizarCodigo, semillaDeTexto } from './rng';
+import { horasDeTripulacion, REPUESTOS_POR_NAVE_KG } from './recursos';
 
 // ---------------------------------------------------------------------------
 // 1. Datos reales de la NASA
@@ -168,10 +169,10 @@ export const EVENTOS_HISTORICOS: GameEvent[] = [
       {
         id: 'opt_opp1_generadores',
         text: 'Encender los generadores auxiliares',
-        costCredits: 250,
-        description: 'Gastas presupuesto y combustible, pero la batería recibe carga hoy.',
+        costHours: 4,
+        costKg: 40,
+        description: 'Gastas combustible y repuestos del generador, pero la batería recibe carga hoy.',
         consequences: {
-          creditsDelta: -250,
           batteryDelta: 80,
           customMessage: 'Los generadores sostienen la base mientras el polvo tapa el Sol.',
         },
@@ -181,7 +182,7 @@ export const EVENTOS_HISTORICOS: GameEvent[] = [
       {
         id: 'opt_opp1_ahorro',
         text: 'Apagar todo lo que no sea vital',
-        description: 'No cuesta créditos, pero el invernadero y la tripulación lo sienten.',
+        description: 'No gasta repuestos ni horas de trabajo, pero el invernadero y la tripulación lo sienten.',
         consequences: {
           batteryDelta: 40,
           foodDelta: -2,
@@ -194,10 +195,10 @@ export const EVENTOS_HISTORICOS: GameEvent[] = [
       {
         id: 'opt_opp1_inclinar',
         text: 'Reorientar los paneles y cargar antes de que oscurezca',
-        costCredits: 80,
+        costHours: 6,
+        costKg: 5,
         description: 'Aprovechas la última luz buena para llenar la batería, forzando los paneles.',
         consequences: {
-          creditsDelta: -80,
           batteryDelta: 55,
           crewMoraleDelta: -3,
           customMessage: 'La batería quedó más cargada para lo que viene. El polvo ya cubre los paneles.',
@@ -222,6 +223,7 @@ export const EVENTOS_HISTORICOS: GameEvent[] = [
       {
         id: 'opt_opp2_limpiar',
         text: 'Salir a limpiar los paneles a mano',
+        costHours: 8,
         description: 'Recuperas algo de energía, pero la tripulación sale en plena tormenta.',
         consequences: {
           batteryDelta: 50,
@@ -234,20 +236,20 @@ export const EVENTOS_HISTORICOS: GameEvent[] = [
       {
         id: 'opt_opp2_generadores',
         text: 'Encender los generadores auxiliares',
-        costCredits: 250,
-        description: 'Carga segura para hoy a cambio de presupuesto.',
+        costHours: 4,
+        costKg: 40,
+        description: 'Carga segura para hoy a cambio de repuestos del generador.',
         consequences: {
-          creditsDelta: -250,
           batteryDelta: 80,
           customMessage: 'Los generadores cubren el día más oscuro.',
         },
         stemLesson:
-          'El presupuesto también es un recurso de la misión: lo que gastas hoy no lo tendrás para la próxima emergencia.',
+          'Los repuestos también son un recurso de la misión: la próxima nave tarda meses. Lo que gastas hoy no lo tendrás para la próxima emergencia.',
       },
       {
         id: 'opt_opp2_minimo',
         text: 'Quedarse adentro y bajar al mínimo',
-        description: 'Nadie sale y no se gasta presupuesto: se apaga el invernadero y casi todo lo demás.',
+        description: 'Nadie sale y no se gastan repuestos: se apaga el invernadero y casi todo lo demás.',
         consequences: {
           batteryDelta: 30,
           foodDelta: -3,
@@ -287,10 +289,10 @@ export const EVENTOS_HISTORICOS: GameEvent[] = [
       {
         id: 'opt_opp3_generadores',
         text: 'Encender los generadores auxiliares',
-        costCredits: 250,
-        description: 'Si todavía te queda presupuesto, es el día para usarlo.',
+        costHours: 4,
+        costKg: 40,
+        description: 'Si todavía te quedan repuestos, es el día para usarlos.',
         consequences: {
-          creditsDelta: -250,
           batteryDelta: 80,
           customMessage: 'Los generadores te llevan hasta el final de la tormenta.',
         },
@@ -300,10 +302,10 @@ export const EVENTOS_HISTORICOS: GameEvent[] = [
       {
         id: 'opt_opp3_parcial',
         text: 'Hibernación parcial: aire, calor mínimo y radio',
-        costCredits: 100,
+        costHours: 3,
+        costKg: 15,
         description: 'Mantienes la comunicación y algo de calor con una ayuda corta de los generadores.',
         consequences: {
-          creditsDelta: -100,
           batteryDelta: 45,
           crewMoraleDelta: -4,
           customMessage: 'La base aguanta con lo justo y sigue en contacto con la Tierra.',
@@ -343,12 +345,12 @@ export const EVENTOS_HISTORICOS: GameEvent[] = [
       {
         id: 'opt_a13_salvar',
         text: 'Intentar salvar el tanque dañado',
-        costCredits: 100,
+        costHours: 6,
+        costKg: 10,
         description: 'Gastas menos energía, pero el oxígeno sigue escapando mientras lo intentas.',
         consequences: {
           oxygenDelta: -18,
           batteryDelta: -40,
-          creditsDelta: -100,
           customMessage: 'El tanque no se pudo salvar y se escapó más oxígeno en el intento.',
         },
         stemLesson:
@@ -620,7 +622,7 @@ export const AVISO_NAVE =
   'LLEGÓ LA NAVE DE CARGA con el relevo: agua, comida, oxígeno, repuestos y tripulación descansada (su dosis de radiación arranca de cero).';
 
 /** Lo que trae cada nave, como proporción de las reservas con las que arranca el destino. */
-export const CARGA_NAVE = { consumibles: 1.0, creditos: 350, repuestos: 40, blindaje: 20, salud: 25, moral: 20 };
+export const CARGA_NAVE = { consumibles: 1.0, kgRepuestos: REPUESTOS_POR_NAVE_KG, repuestos: 40, blindaje: 20, salud: 25, moral: 20 };
 
 /**
  * Parte de las reservas normales con la que se sale: una misión de menos de 15 soles
@@ -651,15 +653,20 @@ export function reabastecer(state: GameState): GameState {
       status: health <= 25 ? 'critical' : health <= 60 ? 'damaged' : modulo.level > 1 ? 'upgraded' : 'operational',
     };
   }
+  // Relevo de tripulación: las agencias rotan al equipo para no pasar el límite de dosis.
+  const crew = state.crew.map((m) => {
+    if (m.health <= 0) return m;
+    const health = Math.min(100, m.health + CARGA_NAVE.salud);
+    const morale = Math.min(100, m.morale + CARGA_NAVE.moral);
+    const status: typeof m.status = health <= 25 ? 'critical' : health <= 60 ? 'injured' : morale <= 40 ? 'stressed' : 'healthy';
+    return { ...m, health, morale, status };
+  });
+  // El relevo llega descansado: las horas de hoy son las de la tripulación nueva.
+  const horas = horasDeTripulacion(crew);
   return {
     ...state,
     facilities,
-    // Relevo de tripulación: las agencias rotan al equipo para no pasar el límite de dosis.
-    crew: state.crew.map((m) =>
-      m.health > 0
-        ? { ...m, health: Math.min(100, m.health + CARGA_NAVE.salud), morale: Math.min(100, m.morale + CARGA_NAVE.moral) }
-        : m,
-    ),
+    crew,
     subResources: {
       ...s,
       radiationExposureAccumulated: 0,
@@ -670,7 +677,9 @@ export function reabastecer(state: GameState): GameState {
     },
     mainResources: {
       ...state.mainResources,
-      credits: state.mainResources.credits + CARGA_NAVE.creditos,
+      spareKg: state.mainResources.spareKg + CARGA_NAVE.kgRepuestos,
+      crewHours: horas,
+      crewHoursMax: horas,
     },
   };
 }

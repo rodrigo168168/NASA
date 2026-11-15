@@ -69,8 +69,14 @@ export interface MainResources {
   // Radiation protection index (0 - 100%)
   radiationProtectionPercent: number;
 
-  // Mission budget in kCredits (k$)
-  credits: number;
+  // Horas de trabajo de la tripulación que quedan en este sol (se renuevan cada sol y no se acumulan)
+  crewHours: number;
+  // Horas que da la tripulación en un sol completo, según cuántos están vivos y cómo están
+  crewHoursMax: number;
+  // Repuestos y materiales en kg: solo los repone la nave de carga
+  spareKg: number;
+  // Horas que la tripulación pudo dedicar a la ciencia en toda la misión
+  scienceHours: number;
 }
 
 export interface CrewMember {
@@ -98,7 +104,6 @@ export interface PlanetScenario {
     water: number;
     food: number;
     battery: number;
-    credits: number;
   };
   stemFocus: string;
 }
@@ -106,7 +111,10 @@ export interface PlanetScenario {
 export interface GameEventChoice {
   id: string;
   text: string;
-  costCredits?: number;
+  /** Horas de tripulación que lleva esta opción. */
+  costHours?: number;
+  /** Kilos de repuestos y materiales que gasta. */
+  costKg?: number;
   energyCost?: number;
   description: string;
   consequences: {
@@ -114,7 +122,12 @@ export interface GameEventChoice {
     waterDelta?: number;
     foodDelta?: number;
     batteryDelta?: number;
-    creditsDelta?: number;
+    /** Kilos de repuestos que se ganan (carga recuperada, piezas desarmadas). */
+    spareKgDelta?: number;
+    /** Horas que se le devuelven a la tripulación hoy (Control de Misión hace parte del trabajo). */
+    hoursDelta?: number;
+    /** Horas de ciencia que suma la misión. */
+    scienceHoursDelta?: number;
     shieldDelta?: number;
     crewMoraleDelta?: number;
     crewHealthDelta?: number;
@@ -141,7 +154,8 @@ export interface MissionAction {
   id: string;
   name: string;
   category: 'maintenance' | 'upgrade' | 'emergency' | 'science';
-  costCredits: number;
+  costHours: number;
+  costKg: number;
   energyCostKw: number;
   executionCycles: number;
   expectedBenefit: string;
@@ -161,7 +175,8 @@ export interface CycleTelemetryRecord {
   food: number;
   radiationFlux: number;
   shieldIntegrity: number;
-  credits: number;
+  spareKg: number;
+  crewHoursUsed: number;
   crewAverageHealth: number;
   activePolicy: PolicyMode;
   eventTriggered?: string;
@@ -185,6 +200,8 @@ export interface VictorySummary {
   totalEnergyGenerated: number;
   waterRecycledPercent: number;
   scientificBreakthroughs: number;
+  scienceHours: number;
+  spareKgLeft: number;
   stemKeyTakeaways: string[];
 }
 
@@ -225,7 +242,8 @@ export interface GameState {
     waterDelta: number;
     foodDelta: number;
     shieldDelta: number;
-    creditsDelta: number;
+    spareKgDelta: number;
+    scienceHours: number;
     headline: string;
   } | null;
 }

@@ -23,6 +23,10 @@ export const storageService = {
       const parsed = JSON.parse(raw) as GameState;
       // Basic sanity checks
       if (!parsed.planet || !parsed.facilities || !parsed.subResources) return null;
+      // Partida guardada con el presupuesto en dólares de antes: no tiene horas ni repuestos.
+      if (typeof parsed.mainResources?.crewHours !== 'number' || typeof parsed.mainResources?.spareKg !== 'number') {
+        return null;
+      }
       return parsed;
     } catch (e) {
       console.warn('Failed to restore mission state', e);

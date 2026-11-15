@@ -17,11 +17,11 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_dust_generators',
         text: 'Encender Generadores Stirling/RTG Auxiliares',
-        costCredits: 250,
+        costHours: 4,
+        costKg: 40,
         energyCost: 0,
-        description: 'Activa la generación auxiliar de emergencia a costa de combustible y presupuesto de mantenimiento.',
+        description: 'Activa la generación auxiliar de emergencia a costa de combustible y repuestos del generador.',
         consequences: {
-          creditsDelta: -250,
           batteryDelta: 80,
           crewMoraleDelta: 5,
           customMessage: 'Los generadores nucleares auxiliares estabilizaron la red eléctrica durante la tormenta.',
@@ -32,7 +32,6 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_dust_brownout',
         text: 'Protocolo de Ahorro Crítico (Apagar Laboratorios)',
-        costCredits: 0,
         energyCost: 0,
         description: 'Desconecta el laboratorio de investigación y reduce la calefacción del hábitat al mínimo seguro.',
         consequences: {
@@ -47,10 +46,10 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_dust_clean_panels',
         text: 'EVA para Limpiar los Paneles y Bajar el Consumo a la Mitad',
-        costCredits: 60,
+        costHours: 10,
+        costKg: 5,
         description: 'La tripulación sale a barrer el polvo de los paneles mientras la base funciona a media carga.',
         consequences: {
-          creditsDelta: -60,
           batteryDelta: 35,
           crewHealthDelta: -4,
           crewMoraleDelta: -5,
@@ -78,14 +77,14 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_solar_shelter',
         text: 'Evacuación Total al Refugio Subterráneo de Regolito',
-        costCredits: 100,
+        costHours: 8,
+        costKg: 10,
         energyCost: 40,
         description: 'Refugia a los astronautas bajo 3 metros de regolito sinterizado y canaliza agua residual a los escudos.',
         consequences: {
           shieldDelta: -10,
           crewHealthDelta: 0,
           crewMoraleDelta: -5,
-          creditsDelta: -100,
           customMessage: 'El blindaje de regolito rico en hidrógeno absorbió el 94% de la radiación ionizante.',
         },
         stemLesson:
@@ -94,12 +93,12 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_magnetic_overdrive',
         text: 'Sobrecargar Bobinas Magnéticas Deflectoras',
-        costCredits: 350,
+        costHours: 4,
+        costKg: 60,
         energyCost: 90,
         description: 'Genera una magnetosfera artificial temporal a máxima potencia.',
         consequences: {
           batteryDelta: -90,
-          creditsDelta: -350,
           facilityWearDelta: { radiationShield: -15 },
           crewHealthDelta: 0,
           crewMoraleDelta: 10,
@@ -111,8 +110,8 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_solar_water_wall',
         text: 'Refugio Improvisado con los Tanques de Agua y las Provisiones',
-        costCredits: 0,
-        description: 'Sin gastar presupuesto ni energía: se apilan agua y víveres alrededor del dormitorio como blindaje.',
+        costHours: 6,
+        description: 'Sin gastar repuestos ni energía: se apilan agua y víveres alrededor del dormitorio como blindaje.',
         consequences: {
           waterDelta: -12,
           shieldDelta: -4,
@@ -140,10 +139,10 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_replace_catalyst',
         text: 'Sustituir Módulo de Rutenio con Repuestos Críticos',
-        costCredits: 320,
+        costHours: 6,
+        costKg: 55,
         description: 'Reemplaza el catalizador y sella la tubería presurizada con sellante epóxico aeroespacial.',
         consequences: {
-          creditsDelta: -320,
           oxygenDelta: 15,
           facilityWearDelta: { lifeSupport: 20 },
           crewMoraleDelta: 5,
@@ -155,13 +154,13 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_manual_bypass',
         text: 'Bypass de Emergencia con Cilindros de Oxígeno Criogénico',
-        costCredits: 50,
-        description: 'Consume las reservas comprimidas para evitar gastos monetarios inmediatos.',
+        costHours: 2,
+        costKg: 5,
+        description: 'Consume las reservas comprimidas para no gastar el catalizador de repuesto.',
         consequences: {
           oxygenDelta: -25,
-          creditsDelta: -50,
           crewMoraleDelta: -10,
-          customMessage: 'Se preservó el dinero pero las reservas de emergencia de oxígeno bajaron sustancialmente.',
+          customMessage: 'Se ahorraron repuestos, pero las reservas de emergencia de oxígeno bajaron sustancialmente.',
         },
         stemLesson:
           'Consumir reservas finitas no renovables aumenta exponencialmente el riesgo ante futuras contingencias.',
@@ -169,10 +168,10 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_sabatier_field_repair',
         text: 'Reparación en Campo: Limpiar el Catalizador y Operar a Carga Reducida',
-        costCredits: 120,
+        costHours: 12,
+        costKg: 15,
         description: 'Regeneras el catalizador con calor y sellas las grietas; el reactor queda funcionando, pero no como nuevo.',
         consequences: {
-          creditsDelta: -120,
           oxygenDelta: -8,
           facilityWearDelta: { lifeSupport: 8 },
           crewMoraleDelta: -3,
@@ -198,12 +197,12 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_mine_ice',
         text: 'Desplegar Sonda Térmica y Extracción Rodriguez Well',
-        costCredits: 200,
+        costHours: 10,
+        costKg: 30,
         energyCost: 45,
         description: 'Funde el hielo in-situ y bombea agua purificada directamente a los tanques de la base.',
         consequences: {
           waterDelta: 85,
-          creditsDelta: -200,
           batteryDelta: -45,
           crewMoraleDelta: 15,
           customMessage: '¡Éxito minero! Se bombearon 85 litros de agua glacial de alta pureza.',
@@ -214,13 +213,14 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_scientific_core',
         text: 'Tomar Testigos Criogénicos para Análisis Astrobiológico',
-        costCredits: 80,
+        costHours: 8,
+        costKg: 2,
         description: 'Prioriza la recolección de muestras científicas para buscar biofirmas o registros paleoclimáticos.',
         consequences: {
+          scienceHoursDelta: 20,
           waterDelta: 20,
-          creditsDelta: 300, // Subvención científica de la NASA
           crewMoraleDelta: 20,
-          customMessage: '¡Descubrimiento publicado en revistas de la Tierra! La NASA otorgó fondos adicionales.',
+          customMessage: '¡Las muestras ya viajan en los datos a la Tierra! La misión sumó 20 horas de ciencia.',
         },
         stemLesson:
           'Los núcleos de hielo espacial almacenan registros fósiles de la atmósfera primitiva del sistema solar.',
@@ -228,10 +228,10 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_ice_shield',
         text: 'Usar el Hielo como Blindaje: Cubrir el Hábitat',
-        costCredits: 90,
+        costHours: 14,
+        costKg: 5,
         description: 'Extraes bloques de hielo y los apilas sobre el hábitat: menos agua para beber, más protección contra la radiación.',
         consequences: {
-          creditsDelta: -90,
           batteryDelta: -20,
           waterDelta: 25,
           shieldDelta: 18,
@@ -258,12 +258,12 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_upgrade_grow_lights',
         text: 'Reconfigurar y Recalibrar Iluminación LED',
-        costCredits: 120,
+        costHours: 6,
+        costKg: 15,
         description: 'Aplica el nuevo espectro fotosintético a todas las bandejas hidropónicas.',
         consequences: {
           foodDelta: 45,
           oxygenDelta: 10,
-          creditsDelta: -120,
           crewMoraleDelta: 12,
           customMessage: 'La cosecha hidropónica maduró antes de tiempo, generando biomasa nutritiva fresca.',
         },
@@ -273,12 +273,12 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_grow_lights_half',
         text: 'Aplicarlo Solo a la Mitad de las Bandejas (Ensayo Controlado)',
-        costCredits: 40,
+        costHours: 3,
+        costKg: 6,
         description: 'Pruebas el nuevo espectro en media cosecha y dejas la otra mitad como control.',
         consequences: {
           foodDelta: 22,
           oxygenDelta: 5,
-          creditsDelta: -40,
           crewMoraleDelta: 6,
           customMessage: 'El ensayo confirmó el resultado: la mitad tratada rindió más, sin arriesgar toda la cosecha.',
         },
@@ -287,13 +287,13 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       },
       {
         id: 'opt_grow_lights_publish',
-        text: 'Mantener el Cultivo Actual y Vender los Datos a la Tierra',
-        costCredits: 0,
-        description: 'No cambias nada en el invernadero: envías los resultados y cobras por la investigación.',
+        text: 'Mantener el Cultivo Actual y Enviar los Datos a la Tierra',
+        costHours: 2,
+        description: 'No cambias nada en el invernadero: documentas el hallazgo y envías los datos a la Tierra.',
         consequences: {
-          creditsDelta: 180,
+          scienceHoursDelta: 10,
           crewMoraleDelta: 4,
-          customMessage: 'Los datos se publicaron en la Tierra: la base recibió fondos, pero la cosecha siguió igual.',
+          customMessage: 'Los datos llegaron a la Tierra y suman 10 horas de ciencia, pero la cosecha siguió igual.',
         },
         stemLesson:
           'El conocimiento también es un producto de la misión: lo que se aprende cultivando en el espacio mejora la agricultura en la Tierra.',
@@ -316,10 +316,10 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_rapid_patch',
         text: 'EVA Inmediato y Sellado con Parche de Resina Curada por UV',
-        costCredits: 180,
+        costHours: 12,
+        costKg: 20,
         description: 'Dos astronautas salen al exterior para sellar el orificio y colocar un blindaje Whipple adicional.',
         consequences: {
-          creditsDelta: -180,
           oxygenDelta: -12,
           facilityWearDelta: { habitat: 15 },
           crewMoraleDelta: 8,
@@ -331,7 +331,7 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_seal_bulkhead',
         text: 'Aislar el Compartimento Afectado (Cierre de Mamparos)',
-        costCredits: 0,
+        costHours: 2,
         description: 'Cierra herméticamente la bahía afectada reduciendo el espacio útil del hábitat.',
         consequences: {
           facilityWearDelta: { habitat: -25 },
@@ -344,10 +344,10 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_internal_patch',
         text: 'Parche Interno de Emergencia, sin Salir al Exterior',
-        costCredits: 60,
+        costHours: 4,
+        costKg: 6,
         description: 'Se sella el orificio desde adentro con un kit de parche. Nadie sale, pero queda como arreglo provisorio.',
         consequences: {
-          creditsDelta: -60,
           oxygenDelta: -6,
           facilityWearDelta: { habitat: -8 },
           crewMoraleDelta: -5,
@@ -374,10 +374,10 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_replace_solid_state_relay',
         text: 'Sustituir Relés de Estado Sólido de Respaldo',
-        costCredits: 220,
+        costHours: 6,
+        costKg: 35,
         description: 'Instala repuestos de semiconductores de carburo de silicio (SiC) resistentes a alta temperatura.',
         consequences: {
-          creditsDelta: -220,
           batteryDelta: 50,
           facilityWearDelta: { solarArray: 15 },
           crewMoraleDelta: 5,
@@ -389,7 +389,6 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_derate_load',
         text: 'Reducir Carga Nominal del Bus (Derating)',
-        costCredits: 0,
         description: 'Disminuye la potencia tolerada operando al 70% de la capacidad para no fundir los transformadores.',
         consequences: {
           batteryDelta: -40,
@@ -402,10 +401,10 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_reroute_bus',
         text: 'Reconfigurar el Bus: Pasar la Carga a la Línea Secundaria',
-        costCredits: 90,
+        costHours: 8,
+        costKg: 4,
         description: 'Aíslas el inversor dañado y repartes la carga por la línea de respaldo, que trabajará forzada.',
         consequences: {
-          creditsDelta: -90,
           batteryDelta: 15,
           facilityWearDelta: { solarArray: -6 },
           crewMoraleDelta: -2,
@@ -432,14 +431,14 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_recover_vital_cargo',
         text: 'Desplegar Rover de Carga para Recuperar Contenedores',
-        costCredits: 60,
+        costHours: 10,
         energyCost: 20,
-        description: 'Recupera raciones de comida fresca liofilizada, filtros de agua y 350 k$ en subvenciones de investigación.',
+        description: 'Recupera raciones de comida liofilizada, filtros de agua y unos 80 kg de repuestos.',
         consequences: {
+          spareKgDelta: 80,
           waterDelta: 40,
           foodDelta: 50,
           oxygenDelta: 15,
-          creditsDelta: 350,
           crewMoraleDelta: 18,
           customMessage: '¡Cargamento recuperado! La tripulación disfruta de alimentos frescos y nuevos filtros de soporte vital.',
         },
@@ -449,13 +448,13 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_recycle_lander_parts',
         text: 'Desmantelar Cápsula para Extraer Baterías y Titanio',
-        costCredits: 0,
+        costHours: 12,
         energyCost: 10,
-        description: 'Aprovecha las celdas de energía y el blindaje de la cápsula para reforzar la base sin gastar presupuesto.',
+        description: 'Aprovecha las celdas de energía, el blindaje y unos 40 kg de titanio y cables de la cápsula.',
         consequences: {
+          spareKgDelta: 40,
           batteryDelta: 95,
           shieldDelta: 8,
-          creditsDelta: 120,
           crewMoraleDelta: 10,
           customMessage: 'Las celdas de combustible de la cápsula recargaron los bancos de baterías de la base.',
         },
@@ -465,10 +464,10 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_capsule_medical',
         text: 'Priorizar el Botiquín, los Filtros y el Correo de la Tierra',
-        costCredits: 30,
-        description: 'Recuperas primero lo médico y lo personal; el resto de la carga queda expuesto y se pierde en parte.',
+        costHours: 6,
+        description: 'Recuperas primero lo médico y lo personal; del resto solo se salvan unos 25 kg de repuestos.',
         consequences: {
-          creditsDelta: 100,
+          spareKgDelta: 25,
           foodDelta: 15,
           oxygenDelta: 8,
           crewHealthDelta: 15,
@@ -496,7 +495,7 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_sol1_solar_boost',
         text: 'Calibrar Paneles Solares al Máximo',
-        costCredits: 0,
+        costHours: 4,
         description: 'Alinea los paneles fotovoltaicos con el ángulo solar óptimo para asegurar reserva de batería desde el inicio.',
         consequences: {
           batteryDelta: 75,
@@ -509,7 +508,7 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_sol1_water_reserve',
         text: 'Sintetizar Reserva Extra de Agua y Oxígeno',
-        costCredits: 0,
+        costHours: 4,
         description: 'Activa los tanques químicos iniciales para llenar las reservas de agua potable y aire respirable.',
         consequences: {
           waterDelta: 45,
@@ -522,13 +521,12 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       },
       {
         id: 'opt_sol1_nasa_grant',
-        text: 'Transmitir Telemetría en Vivo a la Tierra',
-        costCredits: 0,
-        description: 'Envía el primer reporte audiovisual de alta definición para asegurar fondos extra del Congreso.',
+        text: 'Enviar la Telemetría a Control de Misión',
+        description: 'Los ingenieros en la Tierra revisan los sistemas por ti. Cada mensaje tarda entre 4 y 24 minutos en llegar, pero te ahorran 8 horas de chequeos.',
         consequences: {
-          creditsDelta: 300,
+          hoursDelta: 8,
           crewMoraleDelta: 10,
-          customMessage: '¡Transmisión histórica! Recibiste +$300k adicionales en presupuesto de misión.',
+          customMessage: 'Control de Misión revisó los sistemas desde la Tierra y le ahorró 8 horas de chequeos a la tripulación.',
         },
         stemLesson:
           'Las comunicaciones por banda Ka y óptica láser permiten transmitir datos científicos de alta velocidad desde la Luna y Marte.',
@@ -537,39 +535,39 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
   },
   {
     id: 'earth_university_contract',
-    title: 'Contrato de Investigación con Universidades de la Tierra',
+    title: 'Pedido de Investigación de Universidades de la Tierra',
     severity: 'positiva',
     type: 'opportunity',
     description:
-      'Un consorcio internacional ofrece financiar tu base si realizas pruebas de cultivo en baja gravedad o análisis de radiación durante este Sol.',
+      'Un consorcio de universidades pide que la tripulación dedique horas de este Sol a pruebas de cultivo en baja gravedad o a medir la radiación del hábitat.',
     applicablePlanets: ['mars', 'moon'],
     triggerMinCycle: 2,
     iconName: 'Award',
     stemExplanation:
-      'La ciencia financiada mediante alianzas público-privadas permite costear repuestos críticos mientras se genera conocimiento aplicable en la Tierra.',
+      'La ciencia es la razón de ser de la misión: cada hora de experimentos genera conocimiento aplicable en la Tierra. Pero compite con las horas que pide el mantenimiento de la base.',
     choices: [
       {
         id: 'opt_contract_accept',
         text: 'Aceptar el Experimento (Usar Energía del Laboratorio)',
-        costCredits: 0,
+        costHours: 6,
         energyCost: 35,
-        description: 'Dedica energía de las baterías para completar el estudio y cobrar la recompensa económica completa.',
+        description: 'Dedica energía de las baterías y 6 horas de trabajo para completar el estudio entero.',
         consequences: {
+          scienceHoursDelta: 25,
           batteryDelta: -35,
-          creditsDelta: 420,
           crewMoraleDelta: 8,
-          customMessage: '¡Experimento exitoso! La base recibió +$420k en fondos de patrocinio científico.',
+          customMessage: '¡Experimento exitoso! La misión sumó 25 horas de ciencia.',
         },
         stemLesson:
-          'Los laboratorios orbitales y planetarios monetizan el entorno de microgravedad o baja gravedad para biotecnología.',
+          'En la Estación Espacial se hacen cientos de experimentos por año que solo funcionan en microgravedad, por ejemplo cristales de proteínas para medicamentos.',
       },
       {
         id: 'opt_contract_botany',
         text: 'Enfocar el Estudio en Duplicar Raciones de Comida',
-        costCredits: 50,
+        costHours: 6,
+        costKg: 5,
         description: 'Aprovecha los reactivos del consorcio para acelerar los cultivos del invernadero local.',
         consequences: {
-          creditsDelta: -50,
           foodDelta: 45,
           oxygenDelta: 10,
           crewMoraleDelta: 10,
@@ -581,14 +579,15 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_contract_radiation',
         text: 'Proponer el Estudio de Dosimetría de Radiación',
-        costCredits: 40,
-        description: 'Instalas dosímetros del consorcio en el hábitat: pagan menos, pero los datos te ayudan a mejorar el blindaje.',
+        costHours: 4,
+        costKg: 3,
+        description: 'Instalas dosímetros del consorcio en el hábitat: menos ciencia para la Tierra, pero los datos te ayudan a mejorar el blindaje.',
         consequences: {
-          creditsDelta: 160,
+          scienceHoursDelta: 10,
           batteryDelta: -15,
           shieldDelta: 10,
           crewMoraleDelta: 6,
-          customMessage: 'El mapa de dosis mostró los puntos débiles del blindaje y se reforzaron. Además se cobró parte del contrato.',
+          customMessage: 'El mapa de dosis mostró los puntos débiles del blindaje y se reforzaron. Además sumó 10 horas de ciencia.',
         },
         stemLesson:
           'El instrumento RAD del rover Curiosity mide la radiación en Marte desde 2012; con esos datos se diseñan los refugios de las futuras tripulaciones.',
@@ -611,10 +610,9 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_crew_rest_day',
         text: 'Declarar Jornada Recreativa y Banquete Especial',
-        costCredits: 80,
+        costHours: 12,
         description: 'Sirve raciones gourmet e ilumina el hábitat con luz cálida para recuperar salud y moral al instante.',
         consequences: {
-          creditsDelta: -80,
           foodDelta: -10,
           crewHealthDelta: 18,
           crewMoraleDelta: 25,
@@ -626,7 +624,6 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_crew_double_shift',
         text: 'Mantener Turnos Dobles para Recargar Recursos',
-        costCredits: 0,
         description: 'Exige un esfuerzo extra a la tripulación para producir más agua, oxígeno y energía hoy.',
         consequences: {
           batteryDelta: 55,
@@ -642,10 +639,9 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_crew_rotating_shifts',
         text: 'Turnos Rotativos con Ciclo de Luz Controlado',
-        costCredits: 30,
+        costHours: 4,
         description: 'Reorganizas los horarios y ajustas la iluminación al ritmo de sueño: nadie descansa un día entero, nadie hace doble turno.',
         consequences: {
-          creditsDelta: -30,
           batteryDelta: 15,
           crewHealthDelta: 8,
           crewMoraleDelta: 8,
@@ -672,7 +668,7 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_harvest_humidity',
         text: 'Condensar Vapor hacia los Tanques de Agua Potable',
-        costCredits: 0,
+        costHours: 2,
         description: 'Recupera cada gota de humedad ambiental para aumentar gratuitamente tus reservas de agua.',
         consequences: {
           waterDelta: 55,
@@ -685,7 +681,7 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_cool_solar_inverters',
         text: 'Usar el Agua en el Circuito de Refrigeración Eléctrica',
-        costCredits: 0,
+        costHours: 4,
         description: 'Enfría las baterías y paneles para obtener una descarga extra de energía y proteger los módulos.',
         consequences: {
           batteryDelta: 65,
@@ -699,7 +695,7 @@ export const GAME_EVENTS_DECK: GameEvent[] = [
       {
         id: 'opt_humidity_greenhouse',
         text: 'Devolver la Humedad al Riego del Invernadero',
-        costCredits: 0,
+        costHours: 3,
         description: 'Cierras el ciclo dentro del invernadero: el vapor vuelve a las plantas y la cosecha se adelanta.',
         consequences: {
           waterDelta: 15,

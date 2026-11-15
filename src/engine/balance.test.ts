@@ -30,10 +30,11 @@ function jugar(planeta: 'mars' | 'moon', soles: number, codigo: string, opcion: 
     const ev = estado.activeEvent;
     if (ev) {
       const pagables = ev.choices.filter(
-        (c) => estado.mainResources.credits + (c.consequences.creditsDelta || 0) >= 0,
+        (c) => estado.mainResources.crewHours >= (c.costHours || 0) && estado.mainResources.spareKg >= (c.costKg || 0),
       );
       const lista = pagables.length ? pagables : ev.choices;
-      const c = lista[Math.min(opcion, lista.length - 1)].consequences;
+      const elegida = lista[Math.min(opcion, lista.length - 1)];
+      const c = elegida.consequences;
       const s = estado.subResources;
       estado = {
         ...estado,
@@ -53,7 +54,9 @@ function jugar(planeta: 'mars' | 'moon', soles: number, codigo: string, opcion: 
         },
         mainResources: {
           ...estado.mainResources,
-          credits: Math.max(0, estado.mainResources.credits + (c.creditsDelta || 0)),
+          crewHours: Math.max(0, estado.mainResources.crewHours - (elegida.costHours || 0) + (c.hoursDelta || 0)),
+          spareKg: Math.max(0, estado.mainResources.spareKg - (elegida.costKg || 0) + (c.spareKgDelta || 0)),
+          scienceHours: estado.mainResources.scienceHours + (c.scienceHoursDelta || 0),
         },
       };
     }
@@ -121,7 +124,7 @@ describe('La misión se abastece según su duración', () => {
     expect(r30.warnings[0]).toContain('NAVE DE CARGA');
     expect(r30.nextState.subResources.waterCurrent).toBeGreaterThan(sinNave.subResources.waterCurrent);
     expect(r30.nextState.subResources.foodCurrent).toBeGreaterThan(sinNave.subResources.foodCurrent);
-    expect(r30.nextState.mainResources.credits).toBeGreaterThan(sinNave.mainResources.credits);
+    expect(r30.nextState.mainResources.spareKg).toBeGreaterThan(sinNave.mainResources.spareKg);
     expect(r30.nextState.facilities.solarArray.health).toBeGreaterThan(sinNave.facilities.solarArray.health);
   });
 

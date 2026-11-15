@@ -7,6 +7,7 @@ import {
   ColonyFacilities,
 } from '../domain/types';
 import { NASA_ECLSS_METRICS } from '../domain/constants';
+import { horasDeTripulacion } from './recursos';
 
 // Parámetros de dificultad (ajustados con miles de partidas simuladas)
 const BLACKOUT_ECLSS_FACTOR = 0.3;
@@ -248,6 +249,13 @@ export function advanceSimulationCycle(currentState: GameState): SimulationStepR
   const lifeSupportPercent = Math.round(((o2Ratio + waterRatio + foodRatio) / 3) * 100);
   const radiationProtectionPercent = Math.round(newShieldIntegrity);
 
+  // 9b. Horas de tripulación: las que sobraron hoy se fueron a la ciencia (muestras,
+  // experimentos, datos para la Tierra). Mañana la tripulación da según cómo amaneció.
+  const horasSobrantes = Math.max(0, current.mainResources.crewHours);
+  const horasUsadas = Math.max(0, current.mainResources.crewHoursMax - horasSobrantes);
+  const scienceHours = Math.round((current.mainResources.scienceHours + horasSobrantes) * 10) / 10;
+  const horasManana = horasDeTripulacion(updatedCrew);
+
   // 10. Check Defeat or Victory Conditions
   let nextStatus = current.status;
   let defeatCause: DefeatCause | null = null;
@@ -377,7 +385,8 @@ export function advanceSimulationCycle(currentState: GameState): SimulationStepR
       (newOxygen * 10) + 
       (newWater * 8) + 
       (newFood * 6) + 
-      (current.mainResources.credits * 1.5) +
+      (current.mainResources.spareKg * 3) +
+      (scienceHours * 15) +
       (avgHealth * 20)
     );
 
@@ -388,6 +397,8 @@ export function advanceSimulationCycle(currentState: GameState): SimulationStepR
       totalEnergyGenerated: Math.round(totalGenEst),
       waterRecycledPercent: Math.round(current.subResources.waterRecyclingEfficiency * 100),
       scientificBreakthroughs: current.stemDiscoveriesUnlocked.length,
+      scienceHours,
+      spareKgLeft: Math.round(current.mainResources.spareKg),
       stemKeyTakeaways: [
         'Demostraste el principio de redundancia aeroespacial en soporte vital (ECLSS).',
         'Equilibraste la generación solar variable con la capacidad de almacenamiento en baterías.',
@@ -409,7 +420,8 @@ export function advanceSimulationCycle(currentState: GameState): SimulationStepR
     food: Math.round(newFood * 10) / 10,
     radiationFlux: Math.round(attenuatedMsv * 100) / 100,
     shieldIntegrity: Math.round(newShieldIntegrity),
-    credits: current.mainResources.credits,
+    spareKg: Math.round(current.mainResources.spareKg),
+    crewHoursUsed: Math.round(horasUsadas * 10) / 10,
     crewAverageHealth: Math.round(updatedCrew.reduce((a, b) => a + b.health, 0) / updatedCrew.length),
     activePolicy: current.policy,
   };
@@ -436,7 +448,10 @@ export function advanceSimulationCycle(currentState: GameState): SimulationStepR
       powerConsumptionKw: totalPowerConsumptionKw,
       lifeSupportPercent,
       radiationProtectionPercent,
-      credits: current.mainResources.credits,
+      crewHours: horasManana,
+      crewHoursMax: horasManana,
+      spareKg: current.mainResources.spareKg,
+      scienceHours,
     },
     history: [...current.history, telemetry],
     defeatCause,
